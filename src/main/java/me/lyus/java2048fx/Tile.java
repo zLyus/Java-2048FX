@@ -1,4 +1,4 @@
-package com.example.java2048fx;
+package me.lyus.java2048fx;
 import java.util.Random;
 
 public class Tile {

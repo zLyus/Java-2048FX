@@ -3,6 +3,6 @@ module com.example.java2048fx {
     requires javafx.fxml;
 
 
-    opens com.example.java2048fx to javafx.fxml;
-    exports com.example.java2048fx;
+    opens me.lyus.java2048fx to javafx.fxml;
+    exports me.lyus.java2048fx;
 }

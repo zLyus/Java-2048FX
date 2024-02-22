@@ -1,11 +1,12 @@
-package com.example.java2048fx;
+package me.lyus.java2048fx;
 
 public class Main {
 
     public static void main(String[] args) {
         Board brett = new Board();
-        brett.startSpawn();
         brett.print();
+        brett.spawn();
+        brett.spawn();
         System.out.println("---------------- nach oben");
         brett.moveUp();
         brett.print();
