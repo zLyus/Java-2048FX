@@ -12,8 +12,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.input.KeyEvent;
 
-import java.util.EventListener;
-
 public class Game2048 extends Application {
 
     private static final int GRID_SIZE = 4;
@@ -50,43 +48,36 @@ public class Game2048 extends Application {
 
         Scene sceneMain = new Scene(root);
 
-        sceneMain.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        sceneMain.setOnKeyPressed(new EventHandler<>() {
             @Override
             public void handle(KeyEvent keyEvent) {
                 switch (keyEvent.getCode()) {
                     case W:
-                     System.out.println("oben");
                      board.moveUp();
+                     updateUI(gridPane,board);
                      break;
+
                      case A:
-                         System.out.println("links");
-                         board.moveLeft();
+                     System.out.println("links");
+                     board.moveLeft();
+                     updateUI(gridPane,board);
                      break;
+
                      case S:
                      System.out.println("runter");
                      board.moveDown();
+                     updateUI(gridPane,board);
                      break;
+
                      case D:
                      System.out.println("rechts");
                      board.moveRight();
+                     updateUI(gridPane,board);
                      break;
+
                     default:
                      System.out.println("default");
                      break;
-                }
-                Text updateText;
-                for (int updateCol = 0; updateCol < GRID_SIZE; updateCol++) {
-                    for (int updateRow = 0; updateRow < GRID_SIZE; updateRow++) {
-                        Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
-                        square.setStroke(Color.BLACK); // Optional: to see square borders
-                        if (board.getTile(updateCol, updateRow) == null) {
-                            updateText = new Text("  ");
-                        } else {
-                            updateText = new Text(String.valueOf(board.getTile(updateCol, updateRow).getNumber()));
-                        }
-                        StackPane stackPane = new StackPane(square, updateText);
-                        gridPane.add(stackPane, updateCol, updateRow);
-                    }
                 }
             }
         }
@@ -94,7 +85,28 @@ public class Game2048 extends Application {
             primaryStage.setScene(sceneMain);
             primaryStage.show();
         }
-        public static void main (String[]args){
+    public void updateUI(GridPane gridPane, Board board) {
+
+        for (int col = 0; col < GRID_SIZE; col++) {
+            for (int row = 0; row < GRID_SIZE; row++) {
+                Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
+                square.setStroke(Color.BLACK); // Optional: to see square borders
+
+                Tile currentTile = board.getTile(col, row);
+                Text text;
+                if (currentTile != null) {
+                    text = new Text(String.valueOf(currentTile.getNumber()));
+                } else {
+                    text = new Text("  ");
+                }
+
+                StackPane stackPane = new StackPane(square, text);
+                gridPane.add(stackPane, row, col); // Note: row and col are swapped here
+            }
+        }
+    }
+
+    public static void main (String[]args){
             launch(args);
         }
     }
