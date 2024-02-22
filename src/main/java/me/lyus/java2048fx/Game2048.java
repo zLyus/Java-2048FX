@@ -7,6 +7,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.input.KeyEvent;
@@ -36,18 +38,22 @@ public class Game2048 extends Application {
                 case W:
                     board.moveUp();
                     updateUI(gridPane, board);
+                    board.print();
                     break;
                 case S:
                     board.moveDown();
                     updateUI(gridPane, board);
+                    board.print();
                     break;
                 case A:
                     board.moveLeft();
                     updateUI(gridPane, board);
+                    board.print();
                     break;
                 case D:
                     board.moveRight();
                     updateUI(gridPane, board);
+                    board.print();
                     break;
                 default:
                     break;
@@ -80,6 +86,7 @@ public class Game2048 extends Application {
                 } else {
                     text = new Text("  ");
                 }
+                text.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
                 StackPane stackPane = new StackPane(square, text);
                 GridPane.setRowIndex(stackPane, col);
