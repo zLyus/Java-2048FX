@@ -11,16 +11,16 @@ public class Board {
 
 
     public synchronized void spawn() {
-        if (checkIfSpace() > 0) {
+        if (checkSpace() > 0) {
             Random rnd = new Random();
             Tile t3 = new Tile();
             int boardWidth = board.length;
-            int boardHeight = board[0].length; // Assuming the board is a square or rectangular  2D array
+            int boardHeight = board.length;
 
             do {
                 t3.setX(rnd.nextInt(boardWidth));
                 t3.setY(rnd.nextInt(boardHeight));
-            } while (board[t3.getY()][t3.getX()] != null);
+            } while (board[t3.getY()][t3.getX()] != null); // für den Fall das bei genererierten Koordinaten bereis ein Tile ist
 
             board[t3.getY()][t3.getX()] = t3;
         } else {
@@ -28,7 +28,7 @@ public class Board {
         }
     }
 
-    public int checkIfSpace() {
+    public int checkSpace() {
         int count = 0;
         for (int col = 0; col < board.length; col++) { //y
             for (int row = 0; row < board[col].length; row++) { //x
@@ -44,22 +44,23 @@ public class Board {
         boolean alreadyMerged = false;
         for (int row = 0; row < board[0].length; row++) {
             for (int col = 1; col < board.length; col++) {
-                if (board[col][row] != null) {
+                if (board[col][row] != null) { // nur wenn an gegebener Position ein Tile ist
                     int currentCol = col;
                     while (board[currentCol][row] != null && currentCol > 0 && (board[currentCol - 1][row] == null ||
                             board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber())) {
                         if(alreadyMerged) {
                             currentCol = col;
                             alreadyMerged = false;
-                        }
-                        if (board[currentCol][row] != null && board[currentCol - 1][row] == null) {
-                            board[currentCol - 1][row] = board[currentCol][row];
-                            board[currentCol][row] = null;
-                            board[currentCol - 1][row].setY(currentCol - 1);
-                        } else if (board[currentCol][row] != null && board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber()) {
-                            board[currentCol - 1][row].setNumber(board[currentCol - 1][row].getNumber() * 2);
-                            board[currentCol][row] = null;
-                            alreadyMerged = true;
+                        } else {
+                            if (board[currentCol][row] != null && board[currentCol - 1][row] == null) {
+                                board[currentCol - 1][row] = board[currentCol][row];
+                                board[currentCol][row] = null;
+                                board[currentCol - 1][row].setY(currentCol - 1);
+                            } else if (board[currentCol][row] != null && board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber()) {
+                                board[currentCol - 1][row].setNumber(board[currentCol - 1][row].getNumber() * 2);
+                                board[currentCol][row] = null;
+                                alreadyMerged = true;
+                            }
                         }
 
                         currentCol--;
