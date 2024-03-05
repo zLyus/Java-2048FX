@@ -7,8 +7,7 @@ public class Board {
 
     public Board() {
         board = new Tile[4][4];
-    } // 1.) x 2.) y
-
+    }
 
     public synchronized void spawn() {
         if (checkSpace() > 0) {
@@ -20,18 +19,18 @@ public class Board {
             do {
                 t3.setX(rnd.nextInt(boardWidth));
                 t3.setY(rnd.nextInt(boardHeight));
-            } while (board[t3.getY()][t3.getX()] != null); // für den Fall das bei genererierten Koordinaten bereis ein Tile ist
+            } while (board[t3.getY()][t3.getX()] != null);
 
             board[t3.getY()][t3.getX()] = t3;
         } else {
-            throw new CustomException("verloren");
+            throw new IllegalStateException("Game over");
         }
     }
 
     public int checkSpace() {
         int count = 0;
-        for (int col = 0; col < board.length; col++) { //y
-            for (int row = 0; row < board[col].length; row++) { //x
+        for (int col = 0; col < board.length; col++) {
+            for (int row = 0; row < board[col].length; row++) {
                 if (board[col][row] == null) {
                     count++;
                 }
@@ -41,164 +40,118 @@ public class Board {
     }
 
     public void moveUp() {
-        for (int row = 0; row < board[0].length; row++) {
-            for (int col = 1; col < board.length; col++) {
-                if (board[col][row] != null) { // nur wenn an gegebener Position ein Tile ist
-                    int currentCol = col;
-                    while (board[currentCol][row] != null && currentCol > 0 && (board[currentCol - 1][row] == null ||
-                            board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber())) {
+        boolean moved = false;
+        do {
+            moved = false;
+            for (int row = 0; row < board[0].length; row++) {
+                for (int col = 1; col < board.length; col++) {
+                    if (board[col][row] != null) {
+                        int currentCol = col;
+                        while (board[currentCol][row] != null && currentCol > 0 && (board[currentCol - 1][row] == null ||
+                                board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber())) {
 
-                        if (board[currentCol][row] != null && board[currentCol - 1][row] == null) {
-                            board[currentCol - 1][row] = board[currentCol][row];
-                            board[currentCol][row] = null;
-                            board[currentCol - 1][row].setY(currentCol - 1);
-                        } else if (board[currentCol][row] != null && board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber()) {
-                            board[currentCol - 1][row].setNumber(board[currentCol - 1][row].getNumber() * 2);
-                            board[currentCol][row] = null;
+                            if (board[currentCol][row] != null && board[currentCol - 1][row] == null) {
+                                board[currentCol - 1][row] = board[currentCol][row];
+                                board[currentCol][row] = null;
+                                board[currentCol - 1][row].setY(currentCol - 1);
+                                moved = true;
+                            } else if (board[currentCol][row] != null && board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber()) {
+                                board[currentCol - 1][row].setNumber(board[currentCol - 1][row].getNumber() * 2);
+                                board[currentCol][row] = null;
+                                moved = true;
+                            }
                         }
                     }
-
-                    currentCol--;
                 }
             }
-        }
+        } while (moved);
         spawn();
     }
 
-
-
-
-
-
     public void moveDown() {
-        for (int row = 0; row < board[0].length; row++) {
-            for (int col = board.length - 2; col >= 0; col--) {
-                if (board[col][row] != null) {
-                    int currentCol = col;
-                    while (board[currentCol][row] != null && currentCol < board.length - 1 && (board[currentCol + 1][row] == null ||
-                            board[currentCol + 1][row].getNumber() == board[currentCol][row].getNumber())) {
-                        if (board[currentCol + 1][row] == null && board[currentCol][row] != null) {
-                            board[currentCol + 1][row] = board[currentCol][row];
-                            board[currentCol][row] = null;
-                            board[currentCol + 1][row].setY(currentCol + 1);
-                        } else if (board[currentCol][row] != null && board[currentCol + 1][row].getNumber() == board[currentCol][row].getNumber()) {
-                            board[currentCol + 1][row].setNumber(board[currentCol + 1][row].getNumber() * 2);
-                            board[currentCol][row] = null;
+        boolean moved = false;
+        do {
+            moved = false;
+            for (int row = 0; row < board[0].length; row++) {
+                for (int col = board.length - 2; col >= 0; col--) {
+                    if (board[col][row] != null) {
+                        int currentCol = col;
+                        while (board[currentCol][row] != null && currentCol < board.length - 1 && (board[currentCol + 1][row] == null ||
+                                board[currentCol + 1][row].getNumber() == board[currentCol][row].getNumber())) {
+                            if (board[currentCol + 1][row] == null && board[currentCol][row] != null) {
+                                board[currentCol + 1][row] = board[currentCol][row];
+                                board[currentCol][row] = null;
+                                board[currentCol + 1][row].setY(currentCol + 1);
+                                moved = true;
+                            } else if (board[currentCol][row] != null && board[currentCol + 1][row].getNumber() == board[currentCol][row].getNumber()) {
+                                board[currentCol + 1][row].setNumber(board[currentCol + 1][row].getNumber() * 2);
+                                board[currentCol][row] = null;
+                                moved = true;
+                            }
                         }
-
-                        currentCol++;
                     }
                 }
             }
-        }
+        } while (moved);
         spawn();
     }
 
     public void moveLeft() {
-        for (int col = 0; col < board.length; col++) {
-            for (int row = 1; row < board[0].length; row++) {
-                if (board[col][row] != null) {
-                    int currentRow = row;
-                    while (board[col][currentRow] != null && currentRow > 0 && (board[col][currentRow - 1] == null ||
-                            board[col][currentRow - 1].getNumber() == board[col][currentRow].getNumber())) {
-
-                        if (board[col][currentRow - 1] == null && board[col][currentRow] != null) {
-                            board[col][currentRow - 1] = board[col][currentRow];
-                            board[col][currentRow] = null;
-                            board[col][currentRow - 1].setX(currentRow - 1);
-                        } else if (board[col][currentRow] != null && board[col][currentRow - 1].getNumber() == board[col][currentRow].getNumber()) {
-                            board[col][currentRow - 1].setNumber(board[col][currentRow - 1].getNumber() * 2);
-                            board[col][currentRow] = null;
+        boolean moved = false;
+        do {
+            moved = false;
+            for (int col = 0; col < board.length; col++) {
+                for (int row = 1; row < board[0].length; row++) {
+                    if (board[col][row] != null) {
+                        int currentRow = row;
+                        while (board[col][currentRow] != null && currentRow > 0 && (board[col][currentRow - 1] == null ||
+                                board[col][currentRow - 1].getNumber() == board[col][currentRow].getNumber())) {
+                            if (board[col][currentRow - 1] == null && board[col][currentRow] != null) {
+                                board[col][currentRow - 1] = board[col][currentRow];
+                                board[col][currentRow] = null;
+                                board[col][currentRow - 1].setX(currentRow - 1);
+                                moved = true;
+                            } else if (board[col][currentRow] != null && board[col][currentRow - 1].getNumber() == board[col][currentRow].getNumber()) {
+                                board[col][currentRow - 1].setNumber(board[col][currentRow - 1].getNumber() * 2);
+                                board[col][currentRow] = null;
+                                moved = true;
+                            }
                         }
-
-                        currentRow--;
                     }
                 }
             }
-        }
+        } while (moved);
         spawn();
     }
 
     public void moveRight() {
-        for (int col = 0; col < board.length; col++) {
-            for (int row = board[0].length - 2; row >= 0; row--) {
-                if (board[col][row] != null) {
-                    int currentRow = row;
-                    while (board[col][currentRow] != null && currentRow < board[0].length - 1 && (board[col][currentRow + 1] == null ||
-                            board[col][currentRow + 1].getNumber() == board[col][currentRow].getNumber())) {
-                        if (board[col][currentRow + 1] == null && board[col][currentRow] != null) {
-                            board[col][currentRow + 1] = board[col][currentRow];
-                            board[col][currentRow] = null;
-                            board[col][currentRow + 1].setX(currentRow + 1);
-                        } else if (board[col][currentRow] != null && board[col][currentRow + 1].getNumber() == board[col][currentRow].getNumber()) {
-                            board[col][currentRow + 1].setNumber(board[col][currentRow + 1].getNumber() * 2);
-                            board[col][currentRow] = null;
+        boolean moved = false;
+        do {
+            moved = false;
+            for (int col = 0; col < board.length; col++) {
+                for (int row = board[0].length - 2; row >= 0; row--) {
+                    if (board[col][row] != null) {
+                        int currentRow = row;
+                        while (board[col][currentRow] != null && currentRow < board[0].length - 1 && (board[col][currentRow + 1] == null ||
+                                board[col][currentRow + 1].getNumber() == board[col][currentRow].getNumber())) {
+                            if (board[col][currentRow + 1] == null && board[col][currentRow] != null) {
+                                board[col][currentRow + 1] = board[col][currentRow];
+                                board[col][currentRow] = null;
+                                board[col][currentRow + 1].setX(currentRow + 1);
+                                moved = true;
+                            } else if (board[col][currentRow] != null && board[col][currentRow + 1].getNumber() == board[col][currentRow].getNumber()) {
+                                board[col][currentRow + 1].setNumber(board[col][currentRow + 1].getNumber() * 2);
+                                board[col][currentRow] = null;
+                                moved = true;
+                            }
                         }
-
-                        currentRow++;
                     }
                 }
             }
-        }
+        } while (moved);
         spawn();
     }
-    public void merge(Direction direction) {
-        int mergeDirection = 0;
-        switch (direction) {
-            case UP:
-                for (int col = 0; col < board.length; col++) {
-                    for (int row = 0; row < board.length; row++) {
-                        if ((col - 1) >= 0 && board[col][row] != null && board[col - 1][row] != null) {
-                            if (board[col][row].getNumber() == board[col - 1][row].getNumber()) {
-                                board[col][row] = null;
-                                board[col - 1][row].setNumber(board[col - 1][row].getNumber() * 2);
-                            }
-                        }
-                    }
-                }
-                break;
 
-            case DOWN:
-                for (int col = 0; col < board.length; col++) {
-                    for (int row = 0; row < board.length; row++) {
-                        if ((col + 1) <= 3 && board[col][row] != null && board[col + 1][row] != null) {
-                            if (board[col][row].getNumber() == board[col + 1][row].getNumber()) {
-                                board[col][row] = null;
-                                board[col + 1][row].setNumber(board[col + 1][row].getNumber() * 2);
-                            }
-                        }
-                    }
-                }
-                break;
-
-            case LEFT:
-                for (int col = 0; col < board.length; col++) {
-                    for (int row = 0; row < board.length; row++) {
-                        if ((row - 1) >= 0 && board[col][row] != null && board[col][row - 1] != null) {
-                            if (board[col][row].getNumber() == board[col][row - 1].getNumber()) {
-                                board[col][row] = null;
-                                board[col][row - 1].setNumber(board[col][row - 1].getNumber() * 2);
-                            }
-                        }
-                    }
-                }
-                break;
-
-            case RIGHT:
-                for (int col = 0; col < board.length; col++) {
-                    for (int row = 0; row < board.length; row++) {
-                        if ((row + 1) <= 3 && board[col][row] != null && board[col][row + 1] != null) {
-                            if (board[col][row].getNumber() == board[col][row + 1].getNumber()) {
-                                board[col][row] = null;
-                                board[col][row + 1].setNumber(board[col][row + 1].getNumber() * 2);
-                            }
-                        }
-                    }
-                }
-                break;
-
-        }
-    }
     public void print() {
         for(int i = 0; i < board.length; i++) {
             for(int j = 0; j < board[i].length; j++) {
@@ -207,13 +160,12 @@ public class Board {
                 } else {
                     System.out.print("0");
                 }
-                System.out.print("  ");
+                System.out.print(" ");
             }
             System.out.println();
         }
         System.out.println("-------------------------");
     }
-
 
     public Tile getTile(int y, int x) {
         return board[y][x];

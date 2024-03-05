@@ -1,3 +1,4 @@
+
 package me.lyus.java2048fx;
 
 import javafx.application.Application;
