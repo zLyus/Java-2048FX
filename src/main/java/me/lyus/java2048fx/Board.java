@@ -32,7 +32,7 @@ public class Board {
         int count = 0;
         for (int col = 0; col < board.length; col++) { //y
             for (int row = 0; row < board[col].length; row++) { //x
-                if(board[col][row] == null) {
+                if (board[col][row] == null) {
                     count++;
                 }
             }
@@ -41,30 +41,24 @@ public class Board {
     }
 
     public void moveUp() {
-        boolean alreadyMerged = false;
         for (int row = 0; row < board[0].length; row++) {
             for (int col = 1; col < board.length; col++) {
                 if (board[col][row] != null) { // nur wenn an gegebener Position ein Tile ist
                     int currentCol = col;
                     while (board[currentCol][row] != null && currentCol > 0 && (board[currentCol - 1][row] == null ||
                             board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber())) {
-                        if(alreadyMerged) {
-                            currentCol = col;
-                            alreadyMerged = false;
-                        } else {
-                            if (board[currentCol][row] != null && board[currentCol - 1][row] == null) {
-                                board[currentCol - 1][row] = board[currentCol][row];
-                                board[currentCol][row] = null;
-                                board[currentCol - 1][row].setY(currentCol - 1);
-                            } else if (board[currentCol][row] != null && board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber()) {
-                                board[currentCol - 1][row].setNumber(board[currentCol - 1][row].getNumber() * 2);
-                                board[currentCol][row] = null;
-                                alreadyMerged = true;
-                            }
-                        }
 
-                        currentCol--;
+                        if (board[currentCol][row] != null && board[currentCol - 1][row] == null) {
+                            board[currentCol - 1][row] = board[currentCol][row];
+                            board[currentCol][row] = null;
+                            board[currentCol - 1][row].setY(currentCol - 1);
+                        } else if (board[currentCol][row] != null && board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber()) {
+                            board[currentCol - 1][row].setNumber(board[currentCol - 1][row].getNumber() * 2);
+                            board[currentCol][row] = null;
+                        }
                     }
+
+                    currentCol--;
                 }
             }
         }
@@ -73,18 +67,16 @@ public class Board {
 
 
 
+
+
+
     public void moveDown() {
-        boolean alreadyMerged = false;
         for (int row = 0; row < board[0].length; row++) {
             for (int col = board.length - 2; col >= 0; col--) {
                 if (board[col][row] != null) {
                     int currentCol = col;
                     while (board[currentCol][row] != null && currentCol < board.length - 1 && (board[currentCol + 1][row] == null ||
                             board[currentCol + 1][row].getNumber() == board[currentCol][row].getNumber())) {
-                        if(alreadyMerged) {
-                            currentCol = col;
-                            alreadyMerged = false;
-                        }
                         if (board[currentCol + 1][row] == null && board[currentCol][row] != null) {
                             board[currentCol + 1][row] = board[currentCol][row];
                             board[currentCol][row] = null;
@@ -92,7 +84,6 @@ public class Board {
                         } else if (board[currentCol][row] != null && board[currentCol + 1][row].getNumber() == board[currentCol][row].getNumber()) {
                             board[currentCol + 1][row].setNumber(board[currentCol + 1][row].getNumber() * 2);
                             board[currentCol][row] = null;
-                            alreadyMerged = true;
                         }
 
                         currentCol++;
@@ -104,17 +95,13 @@ public class Board {
     }
 
     public void moveLeft() {
-        boolean alreadyMerged = false;
         for (int col = 0; col < board.length; col++) {
             for (int row = 1; row < board[0].length; row++) {
                 if (board[col][row] != null) {
                     int currentRow = row;
                     while (board[col][currentRow] != null && currentRow > 0 && (board[col][currentRow - 1] == null ||
                             board[col][currentRow - 1].getNumber() == board[col][currentRow].getNumber())) {
-                        if(alreadyMerged) {
-                            currentRow = row;
-                            alreadyMerged = false;
-                        }
+
                         if (board[col][currentRow - 1] == null && board[col][currentRow] != null) {
                             board[col][currentRow - 1] = board[col][currentRow];
                             board[col][currentRow] = null;
@@ -122,7 +109,6 @@ public class Board {
                         } else if (board[col][currentRow] != null && board[col][currentRow - 1].getNumber() == board[col][currentRow].getNumber()) {
                             board[col][currentRow - 1].setNumber(board[col][currentRow - 1].getNumber() * 2);
                             board[col][currentRow] = null;
-                            alreadyMerged = true;
                         }
 
                         currentRow--;
@@ -134,17 +120,12 @@ public class Board {
     }
 
     public void moveRight() {
-        boolean alreadyMerged = false;
         for (int col = 0; col < board.length; col++) {
             for (int row = board[0].length - 2; row >= 0; row--) {
                 if (board[col][row] != null) {
                     int currentRow = row;
                     while (board[col][currentRow] != null && currentRow < board[0].length - 1 && (board[col][currentRow + 1] == null ||
                             board[col][currentRow + 1].getNumber() == board[col][currentRow].getNumber())) {
-                        if(alreadyMerged) {
-                            currentRow = row;
-                            alreadyMerged = false;
-                        }
                         if (board[col][currentRow + 1] == null && board[col][currentRow] != null) {
                             board[col][currentRow + 1] = board[col][currentRow];
                             board[col][currentRow] = null;
@@ -152,7 +133,6 @@ public class Board {
                         } else if (board[col][currentRow] != null && board[col][currentRow + 1].getNumber() == board[col][currentRow].getNumber()) {
                             board[col][currentRow + 1].setNumber(board[col][currentRow + 1].getNumber() * 2);
                             board[col][currentRow] = null;
-                            alreadyMerged = true;
                         }
 
                         currentRow++;
