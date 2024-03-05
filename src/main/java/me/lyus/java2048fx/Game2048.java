@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 public class Game2048 extends Application {
 
+    private int x;
     private static final int GRID_SIZE = 4;
     private static final int SQUARE_SIZE = 100; // Adjust this value to change square size
 
