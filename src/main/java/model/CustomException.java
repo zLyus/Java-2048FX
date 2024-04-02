@@ -1,4 +1,4 @@
-package me.lyus.java2048fx;
+package model;
 
 public class CustomException extends RuntimeException {
 

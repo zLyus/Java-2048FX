@@ -1,4 +1,5 @@
-package me.lyus.java2048fx;
+package model;
+
 import java.util.Random;
 
 public class Tile {
