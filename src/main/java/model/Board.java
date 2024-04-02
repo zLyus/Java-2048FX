@@ -66,6 +66,7 @@ public class Board {
                             if (board[currentCol][row] != null && board[currentCol - 1][row] == null) {
                                 board[currentCol - 1][row] = board[currentCol][row];
                                 board[currentCol][row] = null;
+                                board[currentCol - 1][row].setPreviousY(board[currentCol - 1][row].getY());
                                 board[currentCol - 1][row].setY(currentCol - 1);
                                 moved = true;
                             } else if (board[currentCol][row] != null && board[currentCol - 1][row].getNumber() == board[currentCol][row].getNumber()) {
@@ -94,6 +95,7 @@ public class Board {
                             if (board[currentCol + 1][row] == null && board[currentCol][row] != null) {
                                 board[currentCol + 1][row] = board[currentCol][row];
                                 board[currentCol][row] = null;
+                                board[currentCol + 1][row].setPreviousY(board[currentCol + 1][row].getY());
                                 board[currentCol + 1][row].setY(currentCol + 1);
                                 moved = true;
                             } else if (board[currentCol][row] != null && board[currentCol + 1][row].getNumber() == board[currentCol][row].getNumber()) {
@@ -122,6 +124,7 @@ public class Board {
                             if (board[col][currentRow - 1] == null && board[col][currentRow] != null) {
                                 board[col][currentRow - 1] = board[col][currentRow];
                                 board[col][currentRow] = null;
+                                board[col][currentRow - 1].setPreviousX(board[col][currentRow - 1].getX());
                                 board[col][currentRow - 1].setX(currentRow - 1);
                                 moved = true;
                             } else if (board[col][currentRow] != null && board[col][currentRow - 1].getNumber() == board[col][currentRow].getNumber()) {
@@ -150,6 +153,7 @@ public class Board {
                             if (board[col][currentRow + 1] == null && board[col][currentRow] != null) {
                                 board[col][currentRow + 1] = board[col][currentRow];
                                 board[col][currentRow] = null;
+                                board[col][currentRow + 1].setPreviousX(board[col][currentRow + 1].getX());
                                 board[col][currentRow + 1].setX(currentRow + 1);
                                 moved = true;
                             } else if (board[col][currentRow] != null && board[col][currentRow + 1].getNumber() == board[col][currentRow].getNumber()) {

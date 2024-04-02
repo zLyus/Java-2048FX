@@ -8,6 +8,8 @@ public class Tile {
     private String color;
     private int x;
     private int y;
+    private int previousX;
+    private int previousY;
 
     public Tile() {
         number = generateNum();
@@ -26,6 +28,22 @@ public class Tile {
 
     public int getY() {
         return y;
+    }
+
+    public int getPreviousX() {
+        return previousX;
+    }
+
+    public void setPreviousX(int previousX) {
+        this.previousX = previousX;
+    }
+
+    public int getPreviousY() {
+        return previousY;
+    }
+
+    public void setPreviousY(int previousY) {
+        this.previousY = previousY;
     }
 
     public void setX(int x) {
