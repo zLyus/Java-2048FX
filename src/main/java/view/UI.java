@@ -33,12 +33,6 @@ public class UI {
                     text = new Text(String.valueOf(currentTile.getNumber()));
                     text.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
-                    // Calculate the new position based on the tile's current and previous positions
-                    double newX = (col + currentTile.getX()) * SQUARE_SIZE + SQUARE_SIZE / 2;
-                    double newY = (row + currentTile.getY()) * SQUARE_SIZE + SQUARE_SIZE / 2;
-
-                    // Animate the movement
-                    animateTileMove(text, newX, newY);
                 } else {
                     text = new Text(" ");
                     text.setFont(Font.font("Arial", FontWeight.BOLD, 20));
@@ -56,23 +50,4 @@ public class UI {
     }
 
 
-    private void animateTileMove(Text text, double newX, double newY) {
-        // Calculate the translation values based on the tile's current and previous positions
-        double translateX = newX - text.getX();
-        double translateY = newY - text.getY();
-
-        // Create a new Timeline for the text
-        Timeline timeline = new Timeline();
-
-        // Define the end state of the animation
-        KeyFrame end = new KeyFrame(Duration.seconds(0.5),
-                new KeyValue(text.translateXProperty(), translateX),
-                new KeyValue(text.translateYProperty(), translateY));
-
-        // Add the end state to the timeline
-        timeline.getKeyFrames().add(end);
-
-        // Start the animation
-        timeline.play();
-    }
 }
