@@ -5,9 +5,12 @@ import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -17,35 +20,59 @@ import javafx.stage.Stage;
 import model.Board;
 import model.Tile;
 
+import java.util.Objects;
+
 public class Game2048 extends Application {
 
     public static final int GRID_SIZE = 4;
     public static final int SQUARE_SIZE = 100;
 
     private GridPane gridPane = new GridPane();
-    private Scene gameScene = new Scene(gridPane, 800,600);
-    private StackPane stackPane = new StackPane();
+
+    private GridPane gameLost = new GridPane();
     private Stage endStage = new Stage();
-    private Scene endScene = new Scene(stackPane, 400, 200);
     private Button resetButton = new Button("Reset");
     private Board board = new Board();
     Controller controller = new Controller();
+    Label currentHighScore = new Label("Highest Number");
+    VBox vbox = new VBox();
+    Image image = new Image("/gameBoard.png");
+    ImageView backGround = new ImageView(image);
 
     @Override
     public void start(Stage gameStage) {
 
-        stackPane.getChildren().add(resetButton);
+        backGround.setImage(backGround.getImage());
+        backGround.setFitHeight(400);
+        backGround.setFitWidth(400);
+        vbox.getChildren().add(backGround);
 
         board.clearBoard();
-        controller.spawn(board);
-        controller.spawn(board);
+        board.spawn();
+        board.spawn();
         updateUI(gridPane, board);
-
+        vbox.setAlignment(Pos.CENTER);
         gridPane.setAlignment(Pos.CENTER);
 
         updateUI(gridPane, board);
 
-        resetButton.setOnAction(new ButtonEvent);
+        vbox.getChildren().add(currentHighScore);
+        vbox.getChildren().add(gridPane);
+
+        Scene gameScene = new Scene(vbox, 800,600);
+
+        gameStage.setTitle("2048Game");
+        gameStage.setScene(gameScene);
+        gameStage.show();
+
+
+        resetButton.setOnAction(event -> {
+            board.clearBoard();
+            board.spawn();
+            board.spawn();
+            updateUI(gridPane,board);
+            endStage.hide();
+        });
 
         gameScene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
@@ -54,35 +81,48 @@ public class Game2048 extends Application {
                     board.moveUp();
                     updateUI(gridPane, board);
                     board.print();
+                    if (!board.isSpawned()) {
+                        gameEnded();
+                    }
                     break;
                     case DOWN:
                 case S:
                     board.moveDown();
                     updateUI(gridPane, board);
                     board.print();
+                    if (!board.isSpawned()) {
+                        gameEnded();
+                    }
                     break;
                     case LEFT:
                 case A:
                     board.moveLeft();
                     updateUI(gridPane, board);
                     board.print();
+                    if (!board.isSpawned()) {
+                        gameEnded();
+                    }
                     break;
                     case RIGHT:
                 case D:
                     board.moveRight();
                     updateUI(gridPane, board);
                     board.print();
+                    if (!board.isSpawned()) {
+                        gameEnded();
+                    }
                     break;
                 default:
                     break;
             }
         });
-        gameStage.setTitle("2048Game");
-        gameStage.setScene(gameScene);
-        gameStage.show();
     }
 
+
     public void gameEnded() {
+        gameLost.add(resetButton,0,0);
+        Scene endScene = new Scene(gameLost, 400, 200);
+        endStage.setScene(endScene);
         endStage.show();
     }
 
