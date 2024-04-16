@@ -1,5 +1,7 @@
 package model;
 
+import view.Game2048;
+
 import java.util.Random;
 
 public class Board {
@@ -9,7 +11,7 @@ public class Board {
         board = new Tile[4][4];
     }
 
-    public synchronized void spawn() {
+    public synchronized boolean spawn() {
         if (checkSpace() > 0) {
             Random rnd = new Random();
             Tile t3 = new Tile();
@@ -22,8 +24,10 @@ public class Board {
             } while (board[t3.getY()][t3.getX()] != null);
 
             board[t3.getY()][t3.getX()] = t3;
+
+            return true;
         } else {
-            throw new IllegalStateException("Game over");
+            return false;
         }
     }
 
@@ -167,6 +171,13 @@ public class Board {
             }
         } while (moved);
         spawn();
+    }
+    public void clearBoard() {
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[0].length; j++) {
+                board[i][j] = null;
+            }
+        }
     }
 
     public void print() {
