@@ -30,6 +30,20 @@
             }
         }
 
+        public int getHighestNumber() {
+            int highest = 0;
+            for(int i = 0; i < board.length; i++) {
+                for(int j = 0; j < board[i].length; j++) {
+                    if (board[i][j] != null) {
+                        if(highest < board[i][j].getNumber()) {
+                            highest = board[i][j].getNumber();
+                        }
+                    }
+                }
+            }
+            return highest;
+        }
+
         public boolean isSpawned() {
             return spawned;
         }

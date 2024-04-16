@@ -1,13 +1,10 @@
 package view;
 
-import controller.Controller;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -18,9 +15,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Board;
+import model.FileManager;
 import model.Tile;
 
-import java.util.Objects;
 
 public class Game2048 extends Application {
 
@@ -28,26 +25,21 @@ public class Game2048 extends Application {
     public static final int SQUARE_SIZE = 100;
 
     private GridPane gridPane = new GridPane();
+    FileManager fileManager = new FileManager();
 
     private GridPane gameLost = new GridPane();
     private Stage endStage = new Stage();
     private Button resetButton = new Button("Reset");
     private Board board = new Board();
-    Controller controller = new Controller();
-    Label currentHighScore = new Label("Highest Number");
+    Label highScoreText = new Label("Highscore");
     VBox vbox = new VBox();
-    Image image = new Image("/gameBoard.png");
-    ImageView backGround = new ImageView(image);
+    Label highScoreValue = new Label("0");
 
     @Override
     public void start(Stage gameStage) {
 
-        backGround.setImage(backGround.getImage());
-        backGround.setFitHeight(400);
-        backGround.setFitWidth(400);
-        vbox.getChildren().add(backGround);
+        highScoreValue.setText(fileManager.load());
 
-        board.clearBoard();
         board.spawn();
         board.spawn();
         updateUI(gridPane, board);
@@ -56,8 +48,8 @@ public class Game2048 extends Application {
 
         updateUI(gridPane, board);
 
-        vbox.getChildren().add(currentHighScore);
-        vbox.getChildren().add(gridPane);
+        vbox.getChildren().addAll(highScoreText, highScoreValue, gridPane);
+
 
         Scene gameScene = new Scene(vbox, 800,600);
 
@@ -79,52 +71,50 @@ public class Game2048 extends Application {
                 case UP:
                 case W:
                     board.moveUp();
-                    updateUI(gridPane, board);
-                    board.print();
-                    if (!board.isSpawned()) {
-                        gameEnded();
-                    }
                     break;
                     case DOWN:
                 case S:
                     board.moveDown();
-                    updateUI(gridPane, board);
-                    board.print();
-                    if (!board.isSpawned()) {
-                        gameEnded();
-                    }
                     break;
                     case LEFT:
                 case A:
                     board.moveLeft();
-                    updateUI(gridPane, board);
-                    board.print();
-                    if (!board.isSpawned()) {
-                        gameEnded();
-                    }
                     break;
                     case RIGHT:
                 case D:
                     board.moveRight();
-                    updateUI(gridPane, board);
-                    board.print();
-                    if (!board.isSpawned()) {
-                        gameEnded();
-                    }
                     break;
                 default:
                     break;
             }
+            updateUI(gridPane,board);
+            if(!board.isSpawned()){
+                gameEnded();
+            }
+            setHighScore(board.getHighestNumber());
         });
     }
 
 
     public void gameEnded() {
+        fileManager.save(board);
         gameLost.add(resetButton,0,0);
         Scene endScene = new Scene(gameLost, 400, 200);
         endStage.setScene(endScene);
         endStage.show();
     }
+
+    public void setHighScore(int checkHighScore) {
+        if(checkHighScore > getHighScore()) {
+            highScoreValue.setText(String.valueOf(checkHighScore));
+        }
+    }
+
+    public int getHighScore() {
+        return Integer.parseInt(highScoreValue.getText());
+    }
+
+
 
     public void updateUI(GridPane gridPane, Board board) {
         gridPane.getChildren().clear(); // Clear the GridPane before updating
