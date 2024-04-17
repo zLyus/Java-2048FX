@@ -25,20 +25,22 @@ public class Game2048 extends Application {
     public static final int SQUARE_SIZE = 100;
 
     private GridPane gridPane = new GridPane();
-    FileManager fileManager = new FileManager();
-
+    private FileManager fileManager = new FileManager();
     private GridPane gameLost = new GridPane();
     private Stage endStage = new Stage();
-    private Button resetButton = new Button("Reset");
+    private Button restartButton = new Button("RestartGame");
     private Board board = new Board();
-    Label highScoreText = new Label("Highscore");
-    VBox vbox = new VBox();
-    Label highScoreValue = new Label("0");
+    private Label highScoreText = new Label("Highscore: ");
+    private VBox vbox = new VBox();
+    private Label highScoreValue = new Label("0");
+    private Label currentScoreText = new Label("Current Score: ");
+    private Label currentScoreValue = new Label("0");
+    Button resetHighScoreButton = new Button("Reset Highscore");
 
     @Override
     public void start(Stage gameStage) {
 
-        highScoreValue.setText(fileManager.load());
+        setHighScore(fileManager.load(), false);
 
         board.spawn();
         board.spawn();
@@ -48,7 +50,7 @@ public class Game2048 extends Application {
 
         updateUI(gridPane, board);
 
-        vbox.getChildren().addAll(highScoreText, highScoreValue, gridPane);
+        vbox.getChildren().addAll(resetHighScoreButton, highScoreText, highScoreValue, currentScoreText, currentScoreValue, gridPane);
 
 
         Scene gameScene = new Scene(vbox, 800,600);
@@ -58,12 +60,17 @@ public class Game2048 extends Application {
         gameStage.show();
 
 
-        resetButton.setOnAction(event -> {
+        restartButton.setOnAction(event -> {
             board.clearBoard();
             board.spawn();
             board.spawn();
             updateUI(gridPane,board);
             endStage.hide();
+            setCurrentScore(0, true);
+        });
+
+        resetHighScoreButton.setOnAction(event -> {
+            setHighScore(0,true);
         });
 
         gameScene.setOnKeyPressed(event -> {
@@ -91,27 +98,50 @@ public class Game2048 extends Application {
             if(!board.isSpawned()){
                 gameEnded();
             }
-            setHighScore(board.getHighestNumber());
+            int currentHighest = board.getHighestNumber();
+            setCurrentScore(currentHighest, false);
+            setHighScore(currentHighest, false);
         });
     }
 
 
     public void gameEnded() {
-        fileManager.save(board);
-        gameLost.add(resetButton,0,0);
+        fileManager.save(board, false);
+        gameLost.add(restartButton,0,0);
         Scene endScene = new Scene(gameLost, 400, 200);
         endStage.setScene(endScene);
         endStage.show();
     }
 
-    public void setHighScore(int checkHighScore) {
-        if(checkHighScore > getHighScore()) {
-            highScoreValue.setText(String.valueOf(checkHighScore));
+    public void setHighScore(int checkHighScore, boolean reset) {
+        if(!reset) {
+            if(checkHighScore > getHighScore()) {
+                highScoreValue.setText(String.valueOf(checkHighScore));
+            }
+        } else {
+            highScoreValue.setText("0");
         }
     }
 
+    public void setCurrentScore(int checkCurrentScore, boolean reset) {
+        System.out.println(checkCurrentScore);
+        if(!reset) {
+            if(checkCurrentScore > getCurrentScore()) {
+                currentScoreValue.setText(String.valueOf(checkCurrentScore));
+            }
+        } else {
+            currentScoreValue.setText("0");
+        }
+
+    }
+
+
     public int getHighScore() {
         return Integer.parseInt(highScoreValue.getText());
+    }
+
+    public int getCurrentScore() {
+        return Integer.parseInt(currentScoreValue.getText());
     }
 
 

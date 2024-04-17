@@ -7,12 +7,15 @@ import java.io.*;
 public class FileManager implements Serializable {
 
 
-    public void save(Board board) {
+    public void save(Board board, boolean reset) {
         int highestNumber = 0;
         try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("HighScore"))) {
-             highestNumber = board.getHighestNumber();
-            System.out.println("aktuelle zahl" + highestNumber);
-                oos.write(highestNumber);
+            if(!reset) {
+                highestNumber = board.getHighestNumber();
+                oos.writeInt(highestNumber);
+            } else {
+                oos.writeInt(0);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -20,18 +23,14 @@ public class FileManager implements Serializable {
 
     public int load() {
         int highest = 0;
-        try(BufferedReader reader = new BufferedReader(new FileReader("HighScore"))) {
-            try {
-                highest = Integer.parseInt(reader.readLine());
-            } catch (NumberFormatException e) {
-
-            }
-            return highest;
-
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("HighScore"))) {
+            highest = ois.readInt();  // Read integer data using readInt
         } catch (FileNotFoundException e) {
 
+            e.printStackTrace();
         } catch (IOException e) {
 
+            e.printStackTrace();
         }
         return highest;
     }
