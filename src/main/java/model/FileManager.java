@@ -7,7 +7,7 @@ import java.io.*;
 public class FileManager implements Serializable {
 
 
-    public void save(Board board, boolean reset) {
+    public void saveHighScore(Board board, boolean reset) {
         int highestNumber = 0;
         try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("HighScore"))) {
             if(!reset) {
@@ -21,7 +21,7 @@ public class FileManager implements Serializable {
         }
     }
 
-    public int load() {
+    public int loadHighScore() {
         int highest = 0;
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("HighScore"))) {
             highest = ois.readInt();  // Read integer data using readInt

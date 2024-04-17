@@ -5,7 +5,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -14,9 +16,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.Board;
-import model.FileManager;
-import model.Tile;
+import model.*;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 
 public class Game2048 extends Application {
@@ -35,30 +38,45 @@ public class Game2048 extends Application {
     private Label highScoreValue = new Label("0");
     private Label currentScoreText = new Label("Current Score: ");
     private Label currentScoreValue = new Label("0");
-    Button resetHighScoreButton = new Button("Reset Highscore");
+    private Button resetHighScoreButton = new Button("Reset Highscore");
+    private SaveGames saveGames = new SaveGames();
+    private ListView<String> lastGames = new ListView<>();
+
+
 
     @Override
     public void start(Stage gameStage) {
 
-        setHighScore(fileManager.load(), false);
+        setHighScore(fileManager.loadHighScore(), false);
 
         board.spawn();
         board.spawn();
         updateUI(gridPane, board);
+
+
+
+        updateUI(gridPane, board);
+
+        HBox row1 = new HBox();
+        HBox row2 = new HBox();
+        HBox row3 = new HBox();
+
+        row1.getChildren().addAll(lastGames,resetHighScoreButton);
+        row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
+        row3.getChildren().addAll(gridPane);
+
+        row2.setAlignment(Pos.CENTER);
+        row3.setAlignment(Pos.CENTER);
         vbox.setAlignment(Pos.CENTER);
         gridPane.setAlignment(Pos.CENTER);
 
-        updateUI(gridPane, board);
-
-        vbox.getChildren().addAll(resetHighScoreButton, highScoreText, highScoreValue, currentScoreText, currentScoreValue, gridPane);
-
+        vbox.getChildren().addAll(row1,row2,row3);
 
         Scene gameScene = new Scene(vbox, 800,600);
 
         gameStage.setTitle("2048Game");
         gameStage.setScene(gameScene);
         gameStage.show();
-
 
         restartButton.setOnAction(event -> {
             board.clearBoard();
@@ -104,9 +122,17 @@ public class Game2048 extends Application {
         });
     }
 
+    public void addtoViewList() {
+        for(int i = 0; i < 10; i++) {
+            lastGames.getItems().add(saveGames.getScoreonIndex(i));
+        }
+    }
+
 
     public void gameEnded() {
-        fileManager.save(board, false);
+        fileManager.saveHighScore(board, false);
+        Game currentGame = new Game(getCurrentScore());
+        saveGames.add(currentGame);
         gameLost.add(restartButton,0,0);
         Scene endScene = new Scene(gameLost, 400, 200);
         endStage.setScene(endScene);
