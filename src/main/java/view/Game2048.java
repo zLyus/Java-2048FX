@@ -18,10 +18,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.*;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-
 public class Game2048 extends Application {
 
     public static final int GRID_SIZE = 4;
@@ -41,7 +37,9 @@ public class Game2048 extends Application {
     private Button resetHighScoreButton = new Button("Reset Highscore");
     private SaveGames saveGames = new SaveGames();
     private ListView<String> lastGames = new ListView<>();
-
+    HBox row1 = new HBox();
+    HBox row2 = new HBox();
+    HBox row3 = new HBox();
 
 
     @Override
@@ -53,18 +51,21 @@ public class Game2048 extends Application {
         board.spawn();
         updateUI(gridPane, board);
 
-
-
         updateUI(gridPane, board);
 
-        HBox row1 = new HBox();
-        HBox row2 = new HBox();
-        HBox row3 = new HBox();
+        lastGames.getItems().add("test");
+        lastGames.prefHeight(100);
+        lastGames.prefWidth(100);
 
-        row1.getChildren().addAll(lastGames,resetHighScoreButton);
+        System.out.println("lastGames width: " + lastGames.getWidth());
+        System.out.println("lastGames height: " + lastGames.getHeight());
+
+
+        row1.getChildren().addAll(lastGames, resetHighScoreButton);
         row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
         row3.getChildren().addAll(gridPane);
 
+        //row1.setSpacing(100);
         row2.setAlignment(Pos.CENTER);
         row3.setAlignment(Pos.CENTER);
         vbox.setAlignment(Pos.CENTER);
@@ -72,7 +73,7 @@ public class Game2048 extends Application {
 
         vbox.getChildren().addAll(row1,row2,row3);
 
-        Scene gameScene = new Scene(vbox, 800,600);
+        Scene gameScene = new Scene(vbox, 1000,800);
 
         gameStage.setTitle("2048Game");
         gameStage.setScene(gameScene);
@@ -122,12 +123,6 @@ public class Game2048 extends Application {
         });
     }
 
-    public void addtoViewList() {
-        for(int i = 0; i < 10; i++) {
-            lastGames.getItems().add(saveGames.getScoreonIndex(i));
-        }
-    }
-
 
     public void gameEnded() {
         fileManager.saveHighScore(board, false);
@@ -139,6 +134,7 @@ public class Game2048 extends Application {
         endStage.show();
     }
 
+
     public void setHighScore(int checkHighScore, boolean reset) {
         if(!reset) {
             if(checkHighScore > getHighScore()) {
@@ -148,6 +144,7 @@ public class Game2048 extends Application {
             highScoreValue.setText("0");
         }
     }
+
 
     public void setCurrentScore(int checkCurrentScore, boolean reset) {
         System.out.println(checkCurrentScore);
@@ -161,7 +158,6 @@ public class Game2048 extends Application {
 
     }
 
-
     public int getHighScore() {
         return Integer.parseInt(highScoreValue.getText());
     }
@@ -170,11 +166,8 @@ public class Game2048 extends Application {
         return Integer.parseInt(currentScoreValue.getText());
     }
 
-
-
     public void updateUI(GridPane gridPane, Board board) {
         gridPane.getChildren().clear(); // Clear the GridPane before updating
-
         for (int col = 0; col < GRID_SIZE; col++) {
             for (int row = 0; row < GRID_SIZE; row++) {
                 Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
@@ -185,21 +178,15 @@ public class Game2048 extends Application {
                 if (currentTile != null) {
                     text = new Text(String.valueOf(currentTile.getNumber()));
                     text.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-
                 } else {
                     text = new Text(" ");
                     text.setFont(Font.font("Arial", FontWeight.BOLD, 20));
                 }
-
                 StackPane stackPane = new StackPane(square, text);
                 GridPane.setRowIndex(stackPane, col);
                 GridPane.setColumnIndex(stackPane, row);
                 gridPane.getChildren().add(stackPane);
             }
         }
-
-
     }
-
-
 }
