@@ -1,6 +1,9 @@
 package view;
 
 import javafx.application.Application;
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -36,10 +39,16 @@ public class Game2048 extends Application {
     private Label currentScoreValue = new Label("0");
     private Button resetHighScoreButton = new Button("Reset Highscore");
     private SaveGames saveGames = new SaveGames();
-    private ListView<String> lastGames = new ListView<>();
-    HBox row1 = new HBox();
-    HBox row2 = new HBox();
-    HBox row3 = new HBox();
+    private ObservableList<String> observlist = FXCollections.observableArrayList();
+    private ListView<String> listView = new ListView<>(observlist);
+    private Stage lastGamesStage = new Stage();
+    private GridPane lastGamesGridPane = new GridPane();
+    private Button lastGamesButton = new Button("Last Games");
+    private Button backToGameButton = new Button("Back to Game");
+    private HBox row1 = new HBox();
+    private HBox row2 = new HBox();
+    private HBox row3 = new HBox();
+    private int indexToAdd = 0;
 
 
     @Override
@@ -47,25 +56,35 @@ public class Game2048 extends Application {
 
         setHighScore(fileManager.loadHighScore(), false);
 
+        lastGamesGridPane.add(listView,0,0);
+        lastGamesGridPane.add(backToGameButton,1,0);
+        Scene scene = new Scene(lastGamesGridPane,400,200);
+        lastGamesStage.setScene(scene);
+
+        fileManager.saveHighScore(board, false);
+        Game currentGame = new Game(getCurrentScore());
+        saveGames.add(currentGame);
+        gameLost.add(restartButton,0,0);
+        Scene endScene = new Scene(gameLost, 400, 200);
+        endStage.setScene(endScene);
+
         board.spawn();
         board.spawn();
         updateUI(gridPane, board);
 
-        updateUI(gridPane, board);
+        listView.prefHeight(95);
+        listView.prefWidth(100);
 
-        lastGames.getItems().add("test");
-        lastGames.prefHeight(100);
-        lastGames.prefWidth(100);
-
-        System.out.println("lastGames width: " + lastGames.getWidth());
-        System.out.println("lastGames height: " + lastGames.getHeight());
+        System.out.println("lastGames width: " + listView.getWidth());
+        System.out.println("lastGames height: " + listView.getHeight());
 
 
-        row1.getChildren().addAll(lastGames, resetHighScoreButton);
+        row1.getChildren().addAll(resetHighScoreButton, lastGamesButton);
         row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
         row3.getChildren().addAll(gridPane);
 
-        //row1.setSpacing(100);
+        row1.setSpacing(10);
+        row2.setSpacing(10);
         row2.setAlignment(Pos.CENTER);
         row3.setAlignment(Pos.CENTER);
         vbox.setAlignment(Pos.CENTER);
@@ -73,11 +92,19 @@ public class Game2048 extends Application {
 
         vbox.getChildren().addAll(row1,row2,row3);
 
-        Scene gameScene = new Scene(vbox, 1000,800);
+        Scene gameScene = new Scene(vbox, 600,500);
 
         gameStage.setTitle("2048Game");
         gameStage.setScene(gameScene);
         gameStage.show();
+
+        lastGamesButton.setOnAction(event -> {
+            lastGamesStage.show();
+        });
+
+        backToGameButton.setOnAction(event -> {
+            lastGamesStage.hide();
+        });
 
         restartButton.setOnAction(event -> {
             board.clearBoard();
@@ -115,7 +142,8 @@ public class Game2048 extends Application {
             }
             updateUI(gridPane,board);
             if(!board.isSpawned()){
-                gameEnded();
+                addLastGamesToListView();
+                endStage.show();
             }
             int currentHighest = board.getHighestNumber();
             setCurrentScore(currentHighest, false);
@@ -123,15 +151,13 @@ public class Game2048 extends Application {
         });
     }
 
-
-    public void gameEnded() {
-        fileManager.saveHighScore(board, false);
-        Game currentGame = new Game(getCurrentScore());
-        saveGames.add(currentGame);
-        gameLost.add(restartButton,0,0);
-        Scene endScene = new Scene(gameLost, 400, 200);
-        endStage.setScene(endScene);
-        endStage.show();
+    public void addLastGamesToListView() {
+        listView.
+        listView.getItems().add(indexToAdd, indexToAdd + ".) Score :" + getCurrentScore());
+        indexToAdd++;
+        if(indexToAdd >= 3) {
+            indexToAdd = 0;
+        }
     }
 
 
