@@ -1,16 +1,17 @@
     package model;
 
+    import java.io.Serializable;
     import java.util.Random;
 
-    public class Board {
+    public class Board implements Serializable {
         private Tile[][] board;
         private boolean spawned;
 
-        public Board() {
+        public Board()  {
             board = new Tile[4][4];
         }
 
-        public synchronized void spawn() {
+        public void spawn() {
             if (checkSpace() > 0) {
                 Random rnd = new Random();
                 Tile t3 = new Tile();
@@ -33,9 +34,9 @@
         public int getHighestNumber() {
             int highest = 0;
             for(int i = 0; i < board.length; i++) {
-                for(int j = 0; j < board[i].length; j++) {
+                for (int j = 0; j < board[i].length; j++) {
                     if (board[i][j] != null) {
-                        if(highest < board[i][j].getNumber()) {
+                        if (highest < board[i][j].getNumber()) {
                             highest = board[i][j].getNumber();
                         }
                     }
@@ -194,21 +195,6 @@
                     board[i][j] = null;
                 }
             }
-        }
-
-        public void print() {
-            for(int i = 0; i < board.length; i++) {
-                for(int j = 0; j < board[i].length; j++) {
-                    if(board[i][j] != null) {
-                        System.out.print(board[i][j].getNumber());
-                    } else {
-                        System.out.print("0");
-                    }
-                    System.out.print(" ");
-                }
-                System.out.println();
-            }
-            System.out.println("-------------------------");
         }
 
         public Tile getTile(int y, int x) {

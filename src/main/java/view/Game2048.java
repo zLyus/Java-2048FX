@@ -1,12 +1,12 @@
 package view;
 
 import javafx.application.Application;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
@@ -21,12 +21,16 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.*;
 
-public class Game2048 extends Application {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class Game2048 extends Application implements Serializable {
 
     public static final int GRID_SIZE = 4;
     public static final int SQUARE_SIZE = 100;
 
     private GridPane gridPane = new GridPane();
+    private Stage gameStage = new Stage();
     private FileManager fileManager = new FileManager();
     private GridPane gameLost = new GridPane();
     private Stage endStage = new Stage();
@@ -37,49 +41,44 @@ public class Game2048 extends Application {
     private Label highScoreValue = new Label("0");
     private Label currentScoreText = new Label("Current Score: ");
     private Label currentScoreValue = new Label("0");
+    private Button changeThemeButton = new Button("Change Theme");
     private Button resetHighScoreButton = new Button("Reset Highscore");
-    private SaveGames saveGames = new SaveGames();
     private ObservableList<String> observlist = FXCollections.observableArrayList();
     private ListView<String> listView = new ListView<>(observlist);
     private Stage lastGamesStage = new Stage();
     private GridPane lastGamesGridPane = new GridPane();
     private Button lastGamesButton = new Button("Last Games");
     private Button backToGameButton = new Button("Back to Game");
+    private Button themeChanged = new Button("Back to Game");
+    private TileColor colorPicker;
+    private GridPane firstGrid = new GridPane();
+    private Button goToGameButton = new Button("Lets Play!");
+    private Button startNewGameButton = new Button("Start new Game");
+    private Button resetLastGames = new Button("Reset Last Games");
+    private ComboBox<String> comboBox = new ComboBox<>();
+    private GridPane changeThemeGridPane = new GridPane();
+    private Stage changeThemeStage = new Stage();
+    private Label instruction = new Label("Hello, this is a game where you need to connect the same numbers with each other so the tiles merge into one. The goal is to reach the number 2048 by combining tiles. Use the WASD keys to move the tiles up, left, down, or right. When two tiles with the same number touch, they merge into one with the sum of the two numbers. Keep combining tiles to create larger numbers. Before you start please select a Color theme (you can always change it later). Can you reach 2048? Good luck!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
     private HBox row3 = new HBox();
     private int indexToAdd = 0;
+    private boolean hasToBeOverwritten = false;
 
 
     @Override
-    public void start(Stage gameStage) {
+    public void start(Stage firstStage) {
 
+        /**
+         * Loads the Highscore and Lastgames that were saved the last time the user played this game
+         */
         setHighScore(fileManager.loadHighScore(), false);
+        setLastGames(fileManager.loadLastGames());
 
-        lastGamesGridPane.add(listView,0,0);
-        lastGamesGridPane.add(backToGameButton,1,0);
-        Scene scene = new Scene(lastGamesGridPane,400,200);
-        lastGamesStage.setScene(scene);
-
-        fileManager.saveHighScore(board, false);
-        Game currentGame = new Game(getCurrentScore());
-        saveGames.add(currentGame);
-        gameLost.add(restartButton,0,0);
-        Scene endScene = new Scene(gameLost, 400, 200);
-        endStage.setScene(endScene);
-
-        board.spawn();
-        board.spawn();
-        updateUI(gridPane, board);
-
-        listView.prefHeight(95);
-        listView.prefWidth(100);
-
-        System.out.println("lastGames width: " + listView.getWidth());
-        System.out.println("lastGames height: " + listView.getHeight());
-
-
-        row1.getChildren().addAll(resetHighScoreButton, lastGamesButton);
+        /**
+         * Designs the mainStage where the Game is played
+         */
+        row1.getChildren().addAll(startNewGameButton, resetHighScoreButton, lastGamesButton, changeThemeButton);
         row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
         row3.getChildren().addAll(gridPane);
 
@@ -91,12 +90,78 @@ public class Game2048 extends Application {
         gridPane.setAlignment(Pos.CENTER);
 
         vbox.getChildren().addAll(row1,row2,row3);
-
         Scene gameScene = new Scene(vbox, 600,500);
-
-        gameStage.setTitle("2048Game");
         gameStage.setScene(gameScene);
+        gameStage.setTitle("Game 2048");
         gameStage.show();
+        board.spawn();
+        board.spawn();
+        updateUI(gridPane, board);
+
+        listView.prefHeight(95);
+        listView.prefWidth(100);
+
+        /**
+         * Designs the "FirstSTage", which shows a tutorial for the game and lets the user select a color theme
+         */
+        comboBox.getItems().addAll("Red", "Blue", "Green");
+
+        firstGrid.add(instruction,0,0);
+        firstGrid.add(comboBox,0,1);
+        firstGrid.add(goToGameButton,0,2);
+
+        Scene FirstScene = new Scene(firstGrid,800,600);
+        firstStage.setScene(FirstScene);
+        firstStage.setTitle("Welcome!");
+        firstStage.show();
+
+        /**
+         * Designs the "LastGamesGridPane", which shows the last 3 games the Player has finished and the achieved Score
+         */
+        lastGamesGridPane.add(listView,0,0);
+        lastGamesGridPane.add(resetLastGames,1,1);
+        lastGamesGridPane.add(backToGameButton,1,2);
+        Scene scene = new Scene(lastGamesGridPane,400,200);
+        lastGamesStage.setScene(scene);
+
+        /**
+         * Designs the "GameLostGridPane", which shows up when the Player lost
+         */
+        gameLost.add(restartButton,0,0);
+        Scene endScene = new Scene(gameLost, 400, 200);
+        endStage.setScene(endScene);
+
+        /**
+         * Designs the "ChangeThemeStage", which lets the user change the theme they selected
+         */
+        changeThemeGridPane.add(comboBox,0,0);
+        changeThemeGridPane.add(themeChanged,1,0);
+        Scene changeThemeScene = new Scene(changeThemeGridPane, 400, 200);
+        changeThemeStage.setScene(changeThemeScene);
+        changeThemeStage.setTitle("Change Theme");
+
+        resetLastGames.setOnAction(event -> {
+            listView.getItems().clear();
+           // fileManager.saveLastGames(listView, true);
+        });
+
+        startNewGameButton.setOnAction(event -> {
+            board.clearBoard();
+            setCurrentScore(0,true);
+            updateUI(gridPane, board);
+        });
+
+        themeChanged.setOnAction(event -> {
+            if(comboBox.getSelectionModel().getSelectedItem() != null) {
+                colorPicker = new TileColor(comboBox.getSelectionModel().getSelectedItem());
+            }
+            changeThemeStage.hide();
+            updateUI(gridPane, board);
+        });
+
+        changeThemeButton.setOnAction(event -> {
+            changeThemeStage.show();
+        });
 
         lastGamesButton.setOnAction(event -> {
             lastGamesStage.show();
@@ -117,6 +182,22 @@ public class Game2048 extends Application {
 
         resetHighScoreButton.setOnAction(event -> {
             setHighScore(0,true);
+
+        });
+
+        goToGameButton.setOnAction(event -> {
+            if(comboBox.getSelectionModel().getSelectedItem() != null) {
+                colorPicker = new TileColor(comboBox.getSelectionModel().getSelectedItem());
+            } else {
+                colorPicker = new TileColor("Red");
+            }
+            firstStage.hide();
+            updateUI(gridPane, board);
+        });
+
+
+        gameStage.setOnCloseRequest(event -> {
+           // fileManager.saveLastGames(convertListView());
         });
 
         gameScene.setOnKeyPressed(event -> {
@@ -125,15 +206,15 @@ public class Game2048 extends Application {
                 case W:
                     board.moveUp();
                     break;
-                    case DOWN:
+                case DOWN:
                 case S:
                     board.moveDown();
                     break;
-                    case LEFT:
+                case LEFT:
                 case A:
                     board.moveLeft();
                     break;
-                    case RIGHT:
+                case RIGHT:
                 case D:
                     board.moveRight();
                     break;
@@ -141,25 +222,46 @@ public class Game2048 extends Application {
                     break;
             }
             updateUI(gridPane,board);
-            if(!board.isSpawned()){
+            if(!board.isSpawned()) {
                 addLastGamesToListView();
                 endStage.show();
+                fileManager.saveHighScore(board, false);
             }
+            fileManager.saveHighScore(board, false);
             int currentHighest = board.getHighestNumber();
             setCurrentScore(currentHighest, false);
             setHighScore(currentHighest, false);
         });
     }
+    public void showMainStage() {
+        Scene gameScene = new Scene(vbox, 600,500);
+
+        gameStage.setTitle("2048Game");
+        gameStage.setScene(gameScene);
+        gameStage.show();
+    }
+
+    public ArrayList<String> convertListView() {
+        ArrayList<String> list = new ArrayList<>();
+        for(String item : observlist) {
+            if(item != null || !(item.equals(""))) {
+                list.add(item);
+            }
+        }
+        return list;
+    }
 
     public void addLastGamesToListView() {
-        listView.
-        listView.getItems().add(indexToAdd, indexToAdd + ".) Score :" + getCurrentScore());
+        if(hasToBeOverwritten) {
+            listView.getItems().remove((indexToAdd));
+        }
+        listView.getItems().add(indexToAdd, (indexToAdd + 1) + ".) Achieved Score : " + getCurrentScore());
         indexToAdd++;
         if(indexToAdd >= 3) {
+            hasToBeOverwritten = true;
             indexToAdd = 0;
         }
     }
-
 
     public void setHighScore(int checkHighScore, boolean reset) {
         if(!reset) {
@@ -184,6 +286,14 @@ public class Game2048 extends Application {
 
     }
 
+    public void setLastGames(ArrayList<String> list) {
+        for(String item : list) {
+            if(item != null || !(item.isEmpty())) {
+                listView.getItems().add(item);
+            }
+        }
+    }
+
     public int getHighScore() {
         return Integer.parseInt(highScoreValue.getText());
     }
@@ -196,17 +306,24 @@ public class Game2048 extends Application {
         gridPane.getChildren().clear(); // Clear the GridPane before updating
         for (int col = 0; col < GRID_SIZE; col++) {
             for (int row = 0; row < GRID_SIZE; row++) {
-                Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
-                square.setStroke(Color.BLACK); // Optional: to see square borders
-
                 Tile currentTile = board.getTile(col, row);
+
+                Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
+
+                square.setStroke(Color.BLACK);
+
                 Text text;
                 if (currentTile != null) {
                     text = new Text(String.valueOf(currentTile.getNumber()));
-                    text.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+                    if(colorPicker != null) {
+                        square.setFill(colorPicker.getColor(currentTile.getNumber()));
+                    } else {
+
+                    }
+                    text.setFont(Font.font("Arial", FontWeight.BOLD, 30));
                 } else {
                     text = new Text(" ");
-                    text.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+                    text.setFont(Font.font("Arial", FontWeight.BOLD, 30));
                 }
                 StackPane stackPane = new StackPane(square, text);
                 GridPane.setRowIndex(stackPane, col);

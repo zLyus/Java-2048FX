@@ -5,7 +5,6 @@ import java.util.Random;
 public class Tile {
 
     private int number;
-    private String color;
     private int x;
     private int y;
 
