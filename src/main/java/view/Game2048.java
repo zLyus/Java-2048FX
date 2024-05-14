@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -78,9 +79,13 @@ public class Game2048 extends Application implements Serializable {
         setHighScore(fileManager.loadHighScore(), false);
         setLastGames(fileManager.loadLastGames());
 
+
         /**
          * Designs the mainStage where the Game is played
          */
+
+        gridPane.setFocusTraversable(true);
+
         row1.getChildren().addAll(startNewGameButton, resetHighScoreButton, lastGamesButton, changeThemeButton);
         row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
         row3.getChildren().addAll(gridPane);
@@ -99,8 +104,8 @@ public class Game2048 extends Application implements Serializable {
         ctrl.startSpawn();
         updateUI(gridPane, board);
 
-        listView.prefHeight(95);
-        listView.prefWidth(100);
+        gameStage.setScene(gameScene);
+        gameStage.setTitle("2048Game");
 
         /**
          * Designs the "FirstStage", which shows a tutorial for the game and lets the user select a color theme
@@ -134,6 +139,10 @@ public class Game2048 extends Application implements Serializable {
         /**
          * Designs the "LastGamesGridPane", which shows the last 3 games the Player has finished and the achieved Score
          */
+
+        listView.prefHeight(95);
+        listView.prefWidth(100);
+
         lastGamesGridPane.add(listView,0,0);
         lastGamesGridPane.add(resetLastGames,1,1);
         lastGamesGridPane.add(backToGameButton,1,2);
@@ -154,9 +163,7 @@ public class Game2048 extends Application implements Serializable {
         changeThemeStage.setScene(changeThemeScene);
         changeThemeStage.setTitle("Change Theme");
 
-        /**
-         *
-         */
+
         resetLastGames.setOnAction(event -> {
             listView.getItems().clear();
            fileManager.saveLastGames(convertListView(), true);
@@ -166,7 +173,7 @@ public class Game2048 extends Application implements Serializable {
             ctrl.clearBoard();
             setCurrentScore(0,true);
             ctrl.startSpawn();
-            updateUI(gridPane, board);
+            updateUI(gridPane, ctrl.getBoard());
         });
 
         themeChangedButton.setOnAction(event -> {
@@ -176,7 +183,7 @@ public class Game2048 extends Application implements Serializable {
                 System.out.println("No color selected");
             }
             changeThemeStage.hide();
-            updateUI(gridPane, board);
+            updateUI(gridPane, ctrl.getBoard());
         });
 
         changeThemeButton.setOnAction(event -> {
@@ -194,7 +201,7 @@ public class Game2048 extends Application implements Serializable {
         restartButton.setOnAction(event -> {
             ctrl.clearBoard();
             ctrl.startSpawn();
-            updateUI(gridPane,board);
+            updateUI(gridPane,ctrl.getBoard());
             endStage.hide();
             setCurrentScore(0, true);
         });
@@ -212,7 +219,7 @@ public class Game2048 extends Application implements Serializable {
             }
             firstStage.hide();
             gameStage.show();
-            updateUI(gridPane, board);
+            updateUI(gridPane, ctrl.getBoard());
         });
 
 
@@ -221,28 +228,30 @@ public class Game2048 extends Application implements Serializable {
         });
 
         gameScene.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case UP:
-                case W:
-                    board.moveUp();
-                    break;
-                case DOWN:
-                case S:
-                    board.moveDown();
-                    break;
-                case LEFT:
-                case A:
-                    board.moveLeft();
-                    break;
-                case RIGHT:
-                case D:
-                    board.moveRight();
-                    break;
-                default:
-                    break;
-            }
-            updateUI(gridPane,board);
-            if(!board.isSpawned()) {
+            System.out.println("Focus Owner:" + gameScene.getFocusOwner());
+                switch (event.getCode()) {
+                    case UP:
+                    case W:
+                        ctrl.moveUp();
+                        break;
+                    case DOWN:
+                    case S:
+                        ctrl.moveDown();
+                        break;
+                    case LEFT:
+                    case A:
+                        ctrl.moveLeft();
+                        break;
+                    case RIGHT:
+                    case D:
+                        ctrl.moveRight();
+                        break;
+                    default:
+                        break;
+                }
+
+            updateUI(gridPane,ctrl.getBoard());
+            if(!ctrl.isSpawned()) {
                 addLastGamesToListView();
 
                 Alert lostAlert = new Alert(javafx.scene.control.Alert.AlertType.ERROR);
@@ -254,28 +263,24 @@ public class Game2048 extends Application implements Serializable {
                 lostAlert.showAndWait().ifPresent(response -> {
                     setCurrentScore(0,true);
                     if (response == ButtonType.OK) {
-                        board.clearBoard();
-                        board.spawn();
-                        updateUI(gridPane,board);
+                        ctrl.clearBoard();
+                        ctrl.startSpawn();
+                        updateUI(gridPane,ctrl.getBoard());
                     }
                 });
                 lostAlert.setOnCloseRequest(Request -> {
                     setCurrentScore(0,true);
-                    board.clearBoard();
+                    ctrl.clearBoard();
                 });
-                fileManager.saveHighScore(board, false);
+                fileManager.saveHighScore(ctrl.getBoard(), false);
             }
-            fileManager.saveHighScore(board, false);
-            int currentHighest = board.getHighestNumber();
+            fileManager.saveHighScore(ctrl.getBoard(), false);
+            int currentHighest = ctrl.getBoard().getHighestNumber();
             setCurrentScore(currentHighest, false);
             setHighScore(currentHighest, false);
         });
     }
     public void showMainStage() {
-        Scene gameScene = new Scene(vbox, 600,500);
-
-        gameStage.setTitle("2048Game");
-        gameStage.setScene(gameScene);
         gameStage.show();
     }
 
@@ -290,13 +295,19 @@ public class Game2048 extends Application implements Serializable {
     }
 
     public void addLastGamesToListView() {
-        if(hasToBeOverwritten) {
-            listView.getItems().remove((indexToAdd));
+        // Always remove the item at the current index if it exists, to ensure overwriting
+        if (indexToAdd < listView.getItems().size()) {
+            listView.getItems().remove(indexToAdd);
         }
+
+        // Add the new score at the current index
         listView.getItems().add(indexToAdd, (indexToAdd + 1) + ".) Achieved Score : " + getCurrentScore());
+
+        // Increment the index
         indexToAdd++;
-        if(indexToAdd >= 3) {
-            hasToBeOverwritten = true;
+
+        // Reset index if it reaches the limit (3)
+        if (indexToAdd >= 3) {
             indexToAdd = 0;
         }
     }
@@ -324,10 +335,14 @@ public class Game2048 extends Application implements Serializable {
     }
 
     public void setLastGames(ArrayList<String> list) {
-        for(String item : list) {
-            if(item != null || !(item.isEmpty())) {
-                listView.getItems().add(item);
+        if(list != null) {
+            for(String item : list) {
+                if (item != null || !(item.isEmpty())) {
+                    listView.getItems().add(item);
+                }
             }
+        } else {
+
         }
     }
 
@@ -343,7 +358,7 @@ public class Game2048 extends Application implements Serializable {
         gridPane.getChildren().clear(); // Clear the GridPane before updating
         for (int col = 0; col < GRID_SIZE; col++) {
             for (int row = 0; row < GRID_SIZE; row++) {
-                Tile currentTile = board.getTile(col, row);
+                Tile currentTile = ctrl.getTile(col, row);
 
                 Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
 
@@ -351,7 +366,7 @@ public class Game2048 extends Application implements Serializable {
 
                 Text text;
                 if (currentTile != null) {
-                    text = new Text(String.valueOf(currentTile.getNumber()));
+                    text = new Text(String.valueOf(ctrl.getNumber(currentTile)));
                     if(colorPicker != null) {
                         square.setFill(colorPicker.getColor(currentTile.getNumber()));
                     } else {

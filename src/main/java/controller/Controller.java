@@ -2,6 +2,7 @@ package controller;
 
 
 import model.Board;
+import model.Tile;
 
 public class Controller {
     Board board;
@@ -10,7 +11,7 @@ public class Controller {
         board = currentBoard;
     }
 
-    public void moveUP() {
+    public void moveUp() {
         board.moveUp();
     }
 
@@ -40,5 +41,24 @@ public class Controller {
     public void clearBoard() {
         board.clearBoard();
     }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public boolean isSpawned() {
+        return board.isSpawned();
+    }
+
+    public Tile getTile(int x, int y) {
+        return board.getTile(x,y);
+    }
+
+    public int getNumber(Tile tile) {
+        return tile.getNumber();
+    }
+
+
+
 
 }

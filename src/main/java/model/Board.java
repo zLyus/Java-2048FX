@@ -61,18 +61,6 @@
             return count;
         }
 
-        public int highestNumber() {
-            int highestNum = 0;
-            for (int col = 0; col < board.length; col++) {
-                for (int row = 0; row < board[col].length; row++) {
-                    Tile currentTile = board[col][row];
-                    if (currentTile.getNumber() > highestNum) {
-                        highestNum = currentTile.getNumber();
-                    }
-                }
-            }
-            return highestNum;
-        }
 
         public void moveUp() {
             boolean moved = false;
