@@ -1,12 +1,9 @@
 package model;
 
-import javafx.scene.control.ListView;
-
 import java.io.*;
 import java.util.ArrayList;
 
 public class FileManager implements Serializable {
-
 
     public void saveHighScore(Board board, boolean reset) {
         int highestNumber = 0;

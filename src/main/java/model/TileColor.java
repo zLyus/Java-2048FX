@@ -32,7 +32,7 @@ public class TileColor {
                 colorMap.put(2048, Color.web("#edc22e"));
                 // Add more colors for higher numbers if needed
                 break;
-            case "Blue":
+            case "Purple":
                 colorMap.put(2, Color.web("#eee4f5"));
                 colorMap.put(4, Color.web("#cdc1ff"));
                 colorMap.put(8, Color.web("#bb86fc"));
@@ -44,7 +44,6 @@ public class TileColor {
                 colorMap.put(512, Color.web("#3d5af1"));
                 colorMap.put(1024, Color.web("#2c3f87"));
                 colorMap.put(2048, Color.web("#1a237e"));
-                // Add more colors for higher numbers if needed
                 break;
             case "Green":
                 colorMap.put(2, Color.web("#e8f5e9"));
@@ -58,7 +57,6 @@ public class TileColor {
                 colorMap.put(512, Color.web("#2e7d32"));
                 colorMap.put(1024, Color.web("#1b5e20"));
                 colorMap.put(2048, Color.web("#0d5302"));
-                // Add more colors for higher numbers if needed
                 break;
         }
     }

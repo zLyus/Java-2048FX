@@ -1,14 +1,12 @@
 package view;
 
+import controller.Controller;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -32,7 +30,6 @@ public class Game2048 extends Application implements Serializable {
     private GridPane gridPane = new GridPane();
     private Stage gameStage = new Stage();
     private FileManager fileManager = new FileManager();
-    private GridPane gameLost = new GridPane();
     private Stage endStage = new Stage();
     private Button restartButton = new Button("RestartGame");
     private Board board = new Board();
@@ -49,21 +46,27 @@ public class Game2048 extends Application implements Serializable {
     private GridPane lastGamesGridPane = new GridPane();
     private Button lastGamesButton = new Button("Last Games");
     private Button backToGameButton = new Button("Back to Game");
-    private Button themeChanged = new Button("Back to Game");
+    private Button themeChangedButton = new Button("Back to Game");
     private TileColor colorPicker;
-    private GridPane firstGrid = new GridPane();
     private Button goToGameButton = new Button("Lets Play!");
     private Button startNewGameButton = new Button("Start new Game");
     private Button resetLastGames = new Button("Reset Last Games");
-    private ComboBox<String> comboBox = new ComboBox<>();
+    private ComboBox<String> themeBox = new ComboBox<>();
     private GridPane changeThemeGridPane = new GridPane();
     private Stage changeThemeStage = new Stage();
-    private Label instruction = new Label("Hello, this is a game where you need to connect the same numbers with each other so the tiles merge into one. The goal is to reach the number 2048 by combining tiles. Use the WASD keys to move the tiles up, left, down, or right. When two tiles with the same number touch, they merge into one with the sum of the two numbers. Keep combining tiles to create larger numbers. Before you start please select a Color theme (you can always change it later). Can you reach 2048? Good luck!");
+    ComboBox<String> changeBox = new ComboBox<>();
+    ComboBox<String> gridBox = new ComboBox<>();
+    private Label instruction = new Label("Hello, this is a game where you need to connect the same numbers with each other so the tiles merge into one. The goal is to reach the number 2048 by combining tiles. Use the WASD keys to move the tiles up, left, down, or right. When two tiles with the same number touch, they merge into one with the sum of the two numbers. Keep combining tiles to create larger numbers. Before you start please select a Color theme (you can always change it later) and the Size of your Board. Can you reach 2048? Good luck!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
     private HBox row3 = new HBox();
+    private HBox firstRow1 = new HBox();
+    private HBox firstRow2 = new HBox();
+    private HBox firstRow3 = new HBox();
+    private HBox firstRow4 = new HBox();
     private int indexToAdd = 0;
     private boolean hasToBeOverwritten = false;
+    private Controller ctrl = new Controller(board);
 
 
     @Override
@@ -93,24 +96,37 @@ public class Game2048 extends Application implements Serializable {
         Scene gameScene = new Scene(vbox, 600,500);
         gameStage.setScene(gameScene);
         gameStage.setTitle("Game 2048");
-        gameStage.show();
-        board.spawn();
-        board.spawn();
+        ctrl.startSpawn();
         updateUI(gridPane, board);
 
         listView.prefHeight(95);
         listView.prefWidth(100);
 
         /**
-         * Designs the "FirstSTage", which shows a tutorial for the game and lets the user select a color theme
+         * Designs the "FirstStage", which shows a tutorial for the game and lets the user select a color theme
          */
-        comboBox.getItems().addAll("Red", "Blue", "Green");
+        themeBox.getItems().addAll("Red", "Purple", "Green");
+        themeBox.setValue("Select Theme");
 
-        firstGrid.add(instruction,0,0);
-        firstGrid.add(comboBox,0,1);
-        firstGrid.add(goToGameButton,0,2);
+        gridBox.getItems().addAll("3x3", "4x4 (recommended)", "5x5");
+        gridBox.setValue("Select Gridsize");
 
-        Scene FirstScene = new Scene(firstGrid,800,600);
+        instruction.setWrapText(true);
+
+        firstRow1.getChildren().add(instruction);
+        firstRow2.getChildren().add(themeBox);
+        firstRow3.getChildren().add(gridBox);
+        firstRow4.getChildren().add(goToGameButton);
+
+        firstRow2.setAlignment(Pos.CENTER);
+        firstRow3.setAlignment(Pos.CENTER);
+        firstRow4.setAlignment(Pos.CENTER);
+
+        VBox firstVbox = new VBox();
+        firstVbox.setSpacing(5);
+        firstVbox.getChildren().addAll(firstRow1, firstRow2, firstRow3, firstRow4);
+
+        Scene FirstScene = new Scene(firstVbox,400,200);
         firstStage.setScene(FirstScene);
         firstStage.setTitle("Welcome!");
         firstStage.show();
@@ -124,36 +140,40 @@ public class Game2048 extends Application implements Serializable {
         Scene scene = new Scene(lastGamesGridPane,400,200);
         lastGamesStage.setScene(scene);
 
-        /**
-         * Designs the "GameLostGridPane", which shows up when the Player lost
-         */
-        gameLost.add(restartButton,0,0);
-        Scene endScene = new Scene(gameLost, 400, 200);
-        endStage.setScene(endScene);
 
         /**
          * Designs the "ChangeThemeStage", which lets the user change the theme they selected
          */
-        changeThemeGridPane.add(comboBox,0,0);
-        changeThemeGridPane.add(themeChanged,1,0);
+
+        changeBox.getItems().addAll("Red", "Purple", "Green");
+
+        changeThemeGridPane.add(changeBox,0,0);
+        changeThemeGridPane.add(themeChangedButton,1,0);
+
         Scene changeThemeScene = new Scene(changeThemeGridPane, 400, 200);
         changeThemeStage.setScene(changeThemeScene);
         changeThemeStage.setTitle("Change Theme");
 
+        /**
+         *
+         */
         resetLastGames.setOnAction(event -> {
             listView.getItems().clear();
-           // fileManager.saveLastGames(listView, true);
+           fileManager.saveLastGames(convertListView(), true);
         });
 
         startNewGameButton.setOnAction(event -> {
-            board.clearBoard();
+            ctrl.clearBoard();
             setCurrentScore(0,true);
+            ctrl.startSpawn();
             updateUI(gridPane, board);
         });
 
-        themeChanged.setOnAction(event -> {
-            if(comboBox.getSelectionModel().getSelectedItem() != null) {
-                colorPicker = new TileColor(comboBox.getSelectionModel().getSelectedItem());
+        themeChangedButton.setOnAction(event -> {
+            if(changeBox.getSelectionModel().getSelectedItem() != null) {
+                colorPicker = new TileColor(changeBox.getSelectionModel().getSelectedItem());
+            } else {
+                System.out.println("No color selected");
             }
             changeThemeStage.hide();
             updateUI(gridPane, board);
@@ -172,9 +192,8 @@ public class Game2048 extends Application implements Serializable {
         });
 
         restartButton.setOnAction(event -> {
-            board.clearBoard();
-            board.spawn();
-            board.spawn();
+            ctrl.clearBoard();
+            ctrl.startSpawn();
             updateUI(gridPane,board);
             endStage.hide();
             setCurrentScore(0, true);
@@ -186,18 +205,19 @@ public class Game2048 extends Application implements Serializable {
         });
 
         goToGameButton.setOnAction(event -> {
-            if(comboBox.getSelectionModel().getSelectedItem() != null) {
-                colorPicker = new TileColor(comboBox.getSelectionModel().getSelectedItem());
+            if(themeBox.getSelectionModel().getSelectedItem() != null) {
+                colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
             } else {
                 colorPicker = new TileColor("Red");
             }
             firstStage.hide();
+            gameStage.show();
             updateUI(gridPane, board);
         });
 
 
         gameStage.setOnCloseRequest(event -> {
-           // fileManager.saveLastGames(convertListView());
+           fileManager.saveLastGames(convertListView(), false);
         });
 
         gameScene.setOnKeyPressed(event -> {
@@ -224,7 +244,25 @@ public class Game2048 extends Application implements Serializable {
             updateUI(gridPane,board);
             if(!board.isSpawned()) {
                 addLastGamesToListView();
-                endStage.show();
+
+                Alert lostAlert = new Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                lostAlert.setTitle("You Lost!");
+                lostAlert.setHeaderText("Your Score was: " + getCurrentScore());
+                lostAlert.setContentText("There wasn´t any space left so you lost");
+                lostAlert.getButtonTypes().set(0, ButtonType.OK);
+
+                lostAlert.showAndWait().ifPresent(response -> {
+                    setCurrentScore(0,true);
+                    if (response == ButtonType.OK) {
+                        board.clearBoard();
+                        board.spawn();
+                        updateUI(gridPane,board);
+                    }
+                });
+                lostAlert.setOnCloseRequest(Request -> {
+                    setCurrentScore(0,true);
+                    board.clearBoard();
+                });
                 fileManager.saveHighScore(board, false);
             }
             fileManager.saveHighScore(board, false);
@@ -275,7 +313,6 @@ public class Game2048 extends Application implements Serializable {
 
 
     public void setCurrentScore(int checkCurrentScore, boolean reset) {
-        System.out.println(checkCurrentScore);
         if(!reset) {
             if(checkCurrentScore > getCurrentScore()) {
                 currentScoreValue.setText(String.valueOf(checkCurrentScore));
