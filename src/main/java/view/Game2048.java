@@ -7,7 +7,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -33,7 +32,7 @@ public class Game2048 extends Application implements Serializable {
     private FileManager fileManager = new FileManager();
     private Stage endStage = new Stage();
     private Button restartButton = new Button("RestartGame");
-    private Board board = new Board();
+    private Board board;
     private Label highScoreText = new Label("Highscore: ");
     private VBox vbox = new VBox();
     private Label highScoreValue = new Label("0");
@@ -57,6 +56,7 @@ public class Game2048 extends Application implements Serializable {
     private Stage changeThemeStage = new Stage();
     ComboBox<String> changeBox = new ComboBox<>();
     ComboBox<String> gridBox = new ComboBox<>();
+    Controller ctrl;
     private Label instruction = new Label("Hello, this is a game where you need to connect the same numbers with each other so the tiles merge into one. The goal is to reach the number 2048 by combining tiles. Use the WASD keys to move the tiles up, left, down, or right. When two tiles with the same number touch, they merge into one with the sum of the two numbers. Keep combining tiles to create larger numbers. Before you start please select a Color theme (you can always change it later) and the Size of your Board. Can you reach 2048? Good luck!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
@@ -66,12 +66,17 @@ public class Game2048 extends Application implements Serializable {
     private HBox firstRow3 = new HBox();
     private HBox firstRow4 = new HBox();
     private int indexToAdd = 0;
-    private boolean hasToBeOverwritten = false;
-    private Controller ctrl = new Controller(board);
+
 
 
     @Override
     public void start(Stage firstStage) {
+
+        /**
+         * Initialiting Variables dependant on user Inputs
+         */
+
+        ctrl = new Controller(board);
 
         /**
          * Loads the Highscore and Lastgames that were saved the last time the user played this game

@@ -10,6 +10,9 @@
         public Board()  {
             board = new Tile[4][4];
         }
+        public Board(int size) {
+            board = new Tile[size][size];
+        }
 
         public void spawn() {
             if (checkSpace() > 0) {
