@@ -4,6 +4,7 @@ import controller.Controller;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -24,8 +25,8 @@ import java.util.ArrayList;
 
 public class Game2048 extends Application implements Serializable {
 
-    public static final int GRID_SIZE = 4;
-    public static final int SQUARE_SIZE = 100;
+    static int GRID_SIZE;
+    public static int SQUARE_SIZE;
 
     private GridPane gridPane = new GridPane();
     private Stage gameStage = new Stage();
@@ -55,7 +56,7 @@ public class Game2048 extends Application implements Serializable {
     private GridPane changeThemeGridPane = new GridPane();
     private Stage changeThemeStage = new Stage();
     ComboBox<String> changeBox = new ComboBox<>();
-    ComboBox<String> gridBox = new ComboBox<>();
+    TextField gridInput = new TextField();
     Controller ctrl;
     private Label instruction = new Label("Hello, this is a game where you need to connect the same numbers with each other so the tiles merge into one. The goal is to reach the number 2048 by combining tiles. Use the WASD keys to move the tiles up, left, down, or right. When two tiles with the same number touch, they merge into one with the sum of the two numbers. Keep combining tiles to create larger numbers. Before you start please select a Color theme (you can always change it later) and the Size of your Board. Can you reach 2048? Good luck!");
     private HBox row1 = new HBox();
@@ -65,8 +66,9 @@ public class Game2048 extends Application implements Serializable {
     private HBox firstRow2 = new HBox();
     private HBox firstRow3 = new HBox();
     private HBox firstRow4 = new HBox();
+    private HBox firstRow5 = new HBox();
     private int indexToAdd = 0;
-
+    int size;
 
 
     @Override
@@ -76,14 +78,11 @@ public class Game2048 extends Application implements Serializable {
          * Initialiting Variables dependant on user Inputs
          */
 
-        ctrl = new Controller(board);
-
         /**
          * Loads the Highscore and Lastgames that were saved the last time the user played this game
          */
         setHighScore(fileManager.loadHighScore(), false);
         setLastGames(fileManager.loadLastGames());
-
 
         /**
          * Designs the mainStage where the Game is played
@@ -102,15 +101,10 @@ public class Game2048 extends Application implements Serializable {
         vbox.setAlignment(Pos.CENTER);
         gridPane.setAlignment(Pos.CENTER);
 
-        vbox.getChildren().addAll(row1,row2,row3);
-        Scene gameScene = new Scene(vbox, 600,500);
+        vbox.getChildren().addAll(row1, row2, row3);
+        Scene gameScene = new Scene(vbox, 1200, 800);
         gameStage.setScene(gameScene);
         gameStage.setTitle("Game 2048");
-        ctrl.startSpawn();
-        updateUI(gridPane, board);
-
-        gameStage.setScene(gameScene);
-        gameStage.setTitle("2048Game");
 
         /**
          * Designs the "FirstStage", which shows a tutorial for the game and lets the user select a color theme
@@ -118,14 +112,14 @@ public class Game2048 extends Application implements Serializable {
         themeBox.getItems().addAll("Red", "Purple", "Green");
         themeBox.setValue("Select Theme");
 
-        gridBox.getItems().addAll("3x3", "4x4 (recommended)", "5x5");
-        gridBox.setValue("Select Gridsize");
+        gridInput.setPrefSize(160,1);
+        gridInput.setPromptText("Select Gridsize, example '4' ");
 
         instruction.setWrapText(true);
 
         firstRow1.getChildren().add(instruction);
         firstRow2.getChildren().add(themeBox);
-        firstRow3.getChildren().add(gridBox);
+        firstRow3.getChildren().add(gridInput);
         firstRow4.getChildren().add(goToGameButton);
 
         firstRow2.setAlignment(Pos.CENTER);
@@ -134,9 +128,9 @@ public class Game2048 extends Application implements Serializable {
 
         VBox firstVbox = new VBox();
         firstVbox.setSpacing(5);
-        firstVbox.getChildren().addAll(firstRow1, firstRow2, firstRow3, firstRow4);
+        firstVbox.getChildren().addAll(firstRow1, firstRow2, firstRow3, firstRow4, firstRow5);
 
-        Scene FirstScene = new Scene(firstVbox,400,200);
+        Scene FirstScene = new Scene(firstVbox, 400, 250);
         firstStage.setScene(FirstScene);
         firstStage.setTitle("Welcome!");
         firstStage.show();
@@ -148,12 +142,11 @@ public class Game2048 extends Application implements Serializable {
         listView.prefHeight(95);
         listView.prefWidth(100);
 
-        lastGamesGridPane.add(listView,0,0);
-        lastGamesGridPane.add(resetLastGames,1,1);
-        lastGamesGridPane.add(backToGameButton,1,2);
-        Scene scene = new Scene(lastGamesGridPane,400,200);
+        lastGamesGridPane.add(listView, 0, 0);
+        lastGamesGridPane.add(resetLastGames, 1, 1);
+        lastGamesGridPane.add(backToGameButton, 1, 2);
+        Scene scene = new Scene(lastGamesGridPane, 400, 200);
         lastGamesStage.setScene(scene);
-
 
         /**
          * Designs the "ChangeThemeStage", which lets the user change the theme they selected
@@ -161,28 +154,57 @@ public class Game2048 extends Application implements Serializable {
 
         changeBox.getItems().addAll("Red", "Purple", "Green");
 
-        changeThemeGridPane.add(changeBox,0,0);
-        changeThemeGridPane.add(themeChangedButton,1,0);
+        changeThemeGridPane.add(changeBox, 0, 0);
+        changeThemeGridPane.add(themeChangedButton, 1, 0);
 
         Scene changeThemeScene = new Scene(changeThemeGridPane, 400, 200);
         changeThemeStage.setScene(changeThemeScene);
         changeThemeStage.setTitle("Change Theme");
 
+        goToGameButton.setOnAction(event -> {
+            if (themeBox.getSelectionModel().getSelectedItem() != null) {
+                colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
+            } else {
+                colorPicker = new TileColor("Red");
+            }
+
+            String selectedValue = gridInput.getText();
+
+
+
+            if (selectedValue != null) {
+                size = Integer.parseInt(selectedValue);
+                //if(size > 0 && size <)
+                System.out.println(size);
+                board = new Board(size);
+                GRID_SIZE = size;
+                SQUARE_SIZE = (150 - size * 10);
+            } else {
+                board = new Board();
+            }
+
+            ctrl = new Controller(board);
+            firstStage.hide();
+            gameStage.show();
+            ctrl.startSpawn();
+            updateUI(gridPane, ctrl.getBoard());
+        });
 
         resetLastGames.setOnAction(event -> {
             listView.getItems().clear();
-           fileManager.saveLastGames(convertListView(), true);
+            fileManager.saveLastGames(convertListView(), true);
         });
 
         startNewGameButton.setOnAction(event -> {
+            addLastGamesToListView();
             ctrl.clearBoard();
-            setCurrentScore(0,true);
+            setCurrentScore(0, true);
             ctrl.startSpawn();
             updateUI(gridPane, ctrl.getBoard());
         });
 
         themeChangedButton.setOnAction(event -> {
-            if(changeBox.getSelectionModel().getSelectedItem() != null) {
+            if (changeBox.getSelectionModel().getSelectedItem() != null) {
                 colorPicker = new TileColor(changeBox.getSelectionModel().getSelectedItem());
             } else {
                 System.out.println("No color selected");
@@ -206,75 +228,63 @@ public class Game2048 extends Application implements Serializable {
         restartButton.setOnAction(event -> {
             ctrl.clearBoard();
             ctrl.startSpawn();
-            updateUI(gridPane,ctrl.getBoard());
+            updateUI(gridPane, ctrl.getBoard());
             endStage.hide();
             setCurrentScore(0, true);
         });
 
         resetHighScoreButton.setOnAction(event -> {
-            setHighScore(0,true);
+            setHighScore(0, true);
 
         });
-
-        goToGameButton.setOnAction(event -> {
-            if(themeBox.getSelectionModel().getSelectedItem() != null) {
-                colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
-            } else {
-                colorPicker = new TileColor("Red");
-            }
-            firstStage.hide();
-            gameStage.show();
-            updateUI(gridPane, ctrl.getBoard());
-        });
-
 
         gameStage.setOnCloseRequest(event -> {
-           fileManager.saveLastGames(convertListView(), false);
+            fileManager.saveLastGames(convertListView(), false);
         });
 
         gameScene.setOnKeyPressed(event -> {
             System.out.println("Focus Owner:" + gameScene.getFocusOwner());
-                switch (event.getCode()) {
-                    case UP:
-                    case W:
-                        ctrl.moveUp();
-                        break;
-                    case DOWN:
-                    case S:
-                        ctrl.moveDown();
-                        break;
-                    case LEFT:
-                    case A:
-                        ctrl.moveLeft();
-                        break;
-                    case RIGHT:
-                    case D:
-                        ctrl.moveRight();
-                        break;
-                    default:
-                        break;
-                }
+            switch (event.getCode()) {
+                case UP:
+                case W:
+                    ctrl.moveUp();
+                    break;
+                case DOWN:
+                case S:
+                    ctrl.moveDown();
+                    break;
+                case LEFT:
+                case A:
+                    ctrl.moveLeft();
+                    break;
+                case RIGHT:
+                case D:
+                    ctrl.moveRight();
+                    break;
+                default:
+                    break;
+            }
 
-            updateUI(gridPane,ctrl.getBoard());
-            if(!ctrl.isSpawned()) {
+            updateUI(gridPane, ctrl.getBoard());
+            if (!ctrl.isSpawned()) {
                 addLastGamesToListView();
 
-                Alert lostAlert = new Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                Alert lostAlert = new Alert(Alert.AlertType.INFORMATION);
                 lostAlert.setTitle("You Lost!");
                 lostAlert.setHeaderText("Your Score was: " + getCurrentScore());
                 lostAlert.setContentText("There wasn´t any space left so you lost");
                 lostAlert.getButtonTypes().set(0, ButtonType.OK);
 
                 lostAlert.showAndWait().ifPresent(response -> {
-                    setCurrentScore(0,true);
+                    setCurrentScore(0, true);
                     if (response == ButtonType.OK) {
                         ctrl.clearBoard();
                         ctrl.startSpawn();
-                        updateUI(gridPane,ctrl.getBoard());
+                        updateUI(gridPane, ctrl.getBoard());
                     }
                 });
                 lostAlert.setOnCloseRequest(Request -> {
-                    setCurrentScore(0,true);
+                    setCurrentScore(0, true);
                     ctrl.clearBoard();
                 });
                 fileManager.saveHighScore(ctrl.getBoard(), false);
@@ -285,33 +295,36 @@ public class Game2048 extends Application implements Serializable {
             setHighScore(currentHighest, false);
         });
     }
+
     public void showMainStage() {
         gameStage.show();
     }
 
     public ArrayList<String> convertListView() {
         ArrayList<String> list = new ArrayList<>();
-        for(String item : observlist) {
-            if(item != null || !(item.equals(""))) {
+        for (String item : observlist) {
+            if (item != null || !(item.equals(""))) {
                 list.add(item);
             }
         }
         return list;
     }
 
+    public void startSpawn() {
+        ctrl.startSpawn();
+    }
+
+
     public void addLastGamesToListView() {
-        // Always remove the item at the current index if it exists, to ensure overwriting
+
         if (indexToAdd < listView.getItems().size()) {
             listView.getItems().remove(indexToAdd);
         }
 
-        // Add the new score at the current index
-        listView.getItems().add(indexToAdd, (indexToAdd + 1) + ".) Achieved Score : " + getCurrentScore());
+        listView.getItems().add(indexToAdd, (indexToAdd + 1) + ".) Achieved Score : " + getCurrentScore() + " Size: " + board.getBoardSize());
 
-        // Increment the index
         indexToAdd++;
 
-        // Reset index if it reaches the limit (3)
         if (indexToAdd >= 3) {
             indexToAdd = 0;
         }

@@ -4,7 +4,7 @@
     import java.util.Random;
 
     public class Board implements Serializable {
-        private Tile[][] board;
+        public Tile[][] board;
         private boolean spawned;
 
         public Board()  {
@@ -17,7 +17,7 @@
         public void spawn() {
             if (checkSpace() > 0) {
                 Random rnd = new Random();
-                Tile t3 = new Tile();
+                Tile t3 = new Tile(board.length);
                 int boardWidth = board.length;
                 int boardHeight = board.length;
 
@@ -62,6 +62,10 @@
                 }
             }
             return count;
+        }
+
+        public int getBoardSize() {
+            return board.length;
         }
 
 

@@ -4,12 +4,14 @@ import java.util.Random;
 
 public class Tile {
 
+    private int boardSize;
     private int number;
     private int x;
     private int y;
 
-    public Tile() {
+    public Tile(int boardSize) {
         number = generateNum();
+        setBoardSize(boardSize);
     }
 
     public int getNumber() {
@@ -29,7 +31,7 @@ public class Tile {
 
 
     public void setX(int x) {
-        if (x >= 0 && x < 4) {
+        if (x >= 0 && x < (boardSize)) {
             this.x = x;
         } else {
             throw new CustomException("X cannot be >5 or <1");
@@ -37,10 +39,22 @@ public class Tile {
     }
 
     public void setY(int y) {
-        if (y >= 0 && y < 4) {
+        if (y >= 0 && y < boardSize) {
             this.y = y;
         } else {
             throw new CustomException("Y cannot be >5 or <1");
+        }
+    }
+
+    public int getBoardSize() {
+        return boardSize;
+    }
+
+    public void setBoardSize(int boardSize) {
+        if(boardSize > 0) {
+            this.boardSize = boardSize;
+        } else {
+            throw new CustomException("Board cannot  be < 1");
         }
     }
 
