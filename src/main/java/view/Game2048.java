@@ -84,7 +84,7 @@ public class Game2048 extends Application implements Serializable {
         setLastGames(fileManager.loadLastGames());
 
         /**
-         * Designs the mainStage where the Game is played
+         * Designs the gameStage where the Game is played
          */
 
         gridPane.setFocusTraversable(true);
@@ -95,15 +95,17 @@ public class Game2048 extends Application implements Serializable {
 
         row1.setSpacing(10);
         row2.setSpacing(10);
+        row1.setAlignment(Pos.CENTER);
         row2.setAlignment(Pos.CENTER);
         row3.setAlignment(Pos.CENTER);
         vbox.setAlignment(Pos.CENTER);
         gridPane.setAlignment(Pos.CENTER);
 
         vbox.getChildren().addAll(row1, row2, row3);
-        Scene gameScene = new Scene(vbox, 1200, 800);
+        Scene gameScene = new Scene(vbox, 700, 600);
         gameStage.setScene(gameScene);
         gameStage.setTitle("Game 2048");
+
 
         /**
          * Designs the "FirstStage", which shows a tutorial for the game and lets the user select a color theme
@@ -178,7 +180,9 @@ public class Game2048 extends Application implements Serializable {
                 GRID_SIZE = size;
                 SQUARE_SIZE = (150 - size * 10);
             } else {
-                board = new Board();
+                GRID_SIZE = 4;
+                SQUARE_SIZE = (150 - 4 * 10);
+                board = new Board(4);
             }
 
             ctrl = new Controller(board);
@@ -386,7 +390,7 @@ public class Game2048 extends Application implements Serializable {
             for (int row = 0; row < GRID_SIZE; row++) {
                 Tile currentTile = ctrl.getTile(col, row);
 
-                Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.LIGHTGRAY);
+                Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.color(0.96695 , 0.95335 , 0.92785));
                 square.setStroke(Color.BLACK);
 
                 Text text;
