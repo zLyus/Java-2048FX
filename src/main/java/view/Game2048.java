@@ -55,10 +55,12 @@ public class Game2048 extends Application implements Serializable {
     private ComboBox<String> themeBox = new ComboBox<>();
     private GridPane changeThemeGridPane = new GridPane();
     private Stage changeThemeStage = new Stage();
-    ComboBox<String> changeBox = new ComboBox<>();
-    TextField gridInput = new TextField();
-    Controller ctrl;
-    private Label instruction = new Label("Hello, this is a game where you need to connect the same numbers with each other so the tiles merge into one. The goal is to reach the number 2048 by combining tiles. Use the WASD keys to move the tiles up, left, down, or right. When two tiles with the same number touch, they merge into one with the sum of the two numbers. Keep combining tiles to create larger numbers. Before you start please select a Color theme (you can always change it later) and the Size of your Board. Can you reach 2048? Good luck!");
+    private ComboBox<String> changeBox = new ComboBox<>();
+    private TextField gridInput = new TextField();
+    private Controller ctrl;
+    private ButtonType confirmButton = new ButtonType("Confirm");
+    private ButtonType cancelButton = new ButtonType("Cancel");
+    private Label instruction = new Label("How to play: Use your arrow keys to move the tiles. Tiles with the same number merge into one when they touch. Add them up to reach 2048!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
     private HBox row3 = new HBox();
@@ -73,14 +75,11 @@ public class Game2048 extends Application implements Serializable {
 
     @Override
     public void start(Stage firstStage) {
-
-        /**
-         * Initialiting Variables dependant on user Inputs
-         */
-
         /**
          * Loads the Highscore and Lastgames that were saved the last time the user played this game
          */
+        fileManager.saveLastGames(convertListView(), true);
+        fileManager.saveHighScore(board,true);
         setHighScore(fileManager.loadHighScore(), false);
         setLastGames(fileManager.loadLastGames());
 
@@ -116,6 +115,7 @@ public class Game2048 extends Application implements Serializable {
         gridInput.setPromptText("Select Gridsize, example '4' ");
 
         instruction.setWrapText(true);
+        instruction.setPadding(new Insets(10));
 
         firstRow1.getChildren().add(instruction);
         firstRow2.getChildren().add(themeBox);
@@ -170,9 +170,7 @@ public class Game2048 extends Application implements Serializable {
 
             String selectedValue = gridInput.getText();
 
-
-
-            if (selectedValue != null) {
+            if (!selectedValue.equals("")) {
                 size = Integer.parseInt(selectedValue);
                 //if(size > 0 && size <)
                 System.out.println(size);
@@ -196,11 +194,24 @@ public class Game2048 extends Application implements Serializable {
         });
 
         startNewGameButton.setOnAction(event -> {
-            addLastGamesToListView();
-            ctrl.clearBoard();
-            setCurrentScore(0, true);
-            ctrl.startSpawn();
-            updateUI(gridPane, ctrl.getBoard());
+            Alert confirmAlert = new Alert(Alert.AlertType.INFORMATION);
+            confirmAlert.setTitle("Confirm");
+            confirmAlert.setHeaderText("Are you sure you want to start a new game?");
+            confirmAlert.setContentText("All progress will be lost, press Confirm to continue");
+
+            confirmAlert.getButtonTypes().setAll(confirmButton, cancelButton);
+
+            confirmAlert.showAndWait().ifPresent(response -> {
+                if (response == confirmButton) {
+                    addLastGamesToListView();
+                    ctrl.clearBoard();
+                    setCurrentScore(0, true);
+                    ctrl.startSpawn();
+                    updateUI(gridPane, ctrl.getBoard());
+                }
+            });
+
+
         });
 
         themeChangedButton.setOnAction(event -> {
@@ -243,7 +254,6 @@ public class Game2048 extends Application implements Serializable {
         });
 
         gameScene.setOnKeyPressed(event -> {
-            System.out.println("Focus Owner:" + gameScene.getFocusOwner());
             switch (event.getCode()) {
                 case UP:
                 case W:
@@ -354,13 +364,11 @@ public class Game2048 extends Application implements Serializable {
 
     public void setLastGames(ArrayList<String> list) {
         if(list != null) {
-            for(String item : list) {
+            for (String item : list) {
                 if (item != null || !(item.isEmpty())) {
                     listView.getItems().add(item);
                 }
             }
-        } else {
-
         }
     }
 
@@ -378,8 +386,7 @@ public class Game2048 extends Application implements Serializable {
             for (int row = 0; row < GRID_SIZE; row++) {
                 Tile currentTile = ctrl.getTile(col, row);
 
-                Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
-
+                Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.LIGHTGRAY);
                 square.setStroke(Color.BLACK);
 
                 Text text;
