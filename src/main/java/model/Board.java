@@ -7,9 +7,7 @@
         public Tile[][] board;
         private boolean spawned;
 
-        public Board()  {
-            board = new Tile[4][4];
-        }
+
         public Board(int size) {
             board = new Tile[size][size];
         }
