@@ -371,6 +371,11 @@ public class Game2048 extends Application implements Serializable {
         return Integer.parseInt(currentScoreValue.getText());
     }
 
+    /**
+     * Goes through every Tile in the board and then draws the board filled with Rectangles and writen the Number Value as a String
+     * @param gridPane - JavaFX Node where the board is drawn
+     * @param board - the 2dimension array where the game is played
+     */
     public void updateUI(GridPane gridPane, Board board) {
         gridPane.getChildren().clear(); // Clear the GridPane before updating
         for (int col = 0; col < GRID_SIZE; col++) {
