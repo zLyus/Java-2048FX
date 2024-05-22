@@ -4,7 +4,6 @@ import controller.Controller;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -75,19 +74,14 @@ public class Game2048 extends Application implements Serializable {
     public void start(Stage firstStage) {
 
         /**
-         * Initialiting Variables dependant on user Inputs
-         */
-
-        /**
          * Loads the Highscore and Lastgames that were saved the last time the user played this game
          */
         setHighScore(fileManager.loadHighScore(), false);
         setLastGames(fileManager.loadLastGames());
 
         /**
-         * Designs the mainStage where the Game is played
+         * Designs the "gameStage" where the Game is played
          */
-
         gridPane.setFocusTraversable(true);
 
         row1.getChildren().addAll(startNewGameButton, resetHighScoreButton, lastGamesButton, changeThemeButton);
@@ -138,7 +132,6 @@ public class Game2048 extends Application implements Serializable {
         /**
          * Designs the "LastGamesGridPane", which shows the last 3 games the Player has finished and the achieved Score
          */
-
         listView.prefHeight(95);
         listView.prefWidth(100);
 
@@ -151,7 +144,6 @@ public class Game2048 extends Application implements Serializable {
         /**
          * Designs the "ChangeThemeStage", which lets the user change the theme they selected
          */
-
         changeBox.getItems().addAll("Red", "Purple", "Green");
 
         changeThemeGridPane.add(changeBox, 0, 0);
@@ -170,8 +162,6 @@ public class Game2048 extends Application implements Serializable {
 
             String selectedValue = gridInput.getText();
 
-
-
             if (selectedValue != null) {
                 size = Integer.parseInt(selectedValue);
                 //if(size > 0 && size <)
@@ -186,6 +176,7 @@ public class Game2048 extends Application implements Serializable {
             ctrl = new Controller(board);
             firstStage.hide();
             gameStage.show();
+
             ctrl.startSpawn();
             updateUI(gridPane, ctrl.getBoard());
         });
@@ -243,7 +234,6 @@ public class Game2048 extends Application implements Serializable {
         });
 
         gameScene.setOnKeyPressed(event -> {
-            System.out.println("Focus Owner:" + gameScene.getFocusOwner());
             switch (event.getCode()) {
                 case UP:
                 case W:
@@ -296,10 +286,10 @@ public class Game2048 extends Application implements Serializable {
         });
     }
 
-    public void showMainStage() {
-        gameStage.show();
-    }
-
+    /**
+     *
+     * @return ArrayList<String>, which has all the Items the Listview has
+     */
     public ArrayList<String> convertListView() {
         ArrayList<String> list = new ArrayList<>();
         for (String item : observlist) {
@@ -310,11 +300,10 @@ public class Game2048 extends Application implements Serializable {
         return list;
     }
 
-    public void startSpawn() {
-        ctrl.startSpawn();
-    }
 
-
+    /**
+     * Adds finished Games to Listview, only the last 3 games are saved
+     */
     public void addLastGamesToListView() {
 
         if (indexToAdd < listView.getItems().size()) {
@@ -352,6 +341,10 @@ public class Game2048 extends Application implements Serializable {
 
     }
 
+    /**
+     * For Serialization purposes, adds all items of the ArrayList<String> list to the listView
+     * @param - list is an ArrayList<String> which carries items to add to the listView
+     */
     public void setLastGames(ArrayList<String> list) {
         if(list != null) {
             for(String item : list) {
@@ -372,6 +365,11 @@ public class Game2048 extends Application implements Serializable {
         return Integer.parseInt(currentScoreValue.getText());
     }
 
+    /**
+     * draws a grid suited for selected gridSize
+     * @param - gridPane is the JavaFX Node the Board gets drawn in
+     * @param - board is a 2dimensional array where the game is played
+     */
     public void updateUI(GridPane gridPane, Board board) {
         gridPane.getChildren().clear(); // Clear the GridPane before updating
         for (int col = 0; col < GRID_SIZE; col++) {

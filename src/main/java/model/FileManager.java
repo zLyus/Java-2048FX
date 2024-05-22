@@ -5,6 +5,11 @@ import java.util.ArrayList;
 
 public class FileManager implements Serializable {
 
+    /**
+     * Serialization for Highscore
+     * @param board is a 2dimensional array where the game is played
+     * @param reset if true writes a 0 and resets the currently written Highscore
+     */
     public void saveHighScore(Board board, boolean reset) {
         int highestNumber = 0;
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("HighScore"))) {
@@ -30,6 +35,11 @@ public class FileManager implements Serializable {
         return highest;
     }
 
+    /**
+     *
+     * @param list an ArrayList<String>, which has all the Items that should be written
+     * @param reset if true writes null and resets the currently written Lastgames
+     */
     public void saveLastGames(ArrayList<String> list, boolean reset) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("LastGames"))) {
             if(reset) {

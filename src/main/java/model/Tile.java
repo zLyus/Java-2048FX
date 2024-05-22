@@ -46,10 +46,6 @@ public class Tile {
         }
     }
 
-    public int getBoardSize() {
-        return boardSize;
-    }
-
     public void setBoardSize(int boardSize) {
         if(boardSize > 0) {
             this.boardSize = boardSize;
@@ -58,6 +54,10 @@ public class Tile {
         }
     }
 
+    /**
+     * Generates a Random Number for each Tile, there is a 90% change that the Number is 2 and a 10% chance for the Number to be 4
+     * @return the generated Number which can be 2 or 4
+     */
     public int generateNum() {
         int totalProbability = 100;
 

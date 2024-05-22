@@ -6,15 +6,24 @@
     public class Board implements Serializable {
         public Tile[][] board;
         private boolean spawned;
+        int i = 0;
+
 
         public Board()  {
             board = new Tile[4][4];
         }
+
         public Board(int size) {
             board = new Tile[size][size];
         }
 
+        /**
+         * Checks if there is Space to spawn, if yes a new Tile with random Coordinates dependent on the boardsize is created,
+         *  if there is already a Tile with these Coordinates, new ones are generated, this Process is repeated until fitting Coordinates are found
+         */
         public void spawn() {
+            i++;
+            System.out.println(i);
             if (checkSpace() > 0) {
                 Random rnd = new Random();
                 Tile t3 = new Tile(board.length);
@@ -34,6 +43,10 @@
             }
         }
 
+        /**
+         * Checks the entire Array
+         * @return the highest Number of the Tiles in the whole array
+         */
         public int getHighestNumber() {
             int highest = 0;
             for(int i = 0; i < board.length; i++) {
@@ -52,6 +65,10 @@
             return spawned;
         }
 
+        /**
+         * Checks the entire Array
+         * @return the amount of Space left for Tiles to spawn
+         */
         public int checkSpace() {
             int count = 0;
             for (int col = 0; col < board.length; col++) {
@@ -68,7 +85,10 @@
             return board.length;
         }
 
-
+        /**
+         * Moves each Tile up until they bump into something, if it´s the wall the next Tile will start moving, if it´s another Tile and
+         * they have the same Value, then they get merged into one, if their Numbers are different the next Tile will start moving
+         */
         public void moveUp() {
             boolean moved = false;
             do {
@@ -98,6 +118,10 @@
             spawn();
         }
 
+        /**
+         * Moves each Tile down until they bump into something, if it´s the wall the next Tile will start moving, if it´s another Tile and
+         * they have the same Value, then they get merged into one, if their Numbers are different the next Tile will start moving
+         */
         public void moveDown() {
             boolean moved = false;
             do {
@@ -127,6 +151,10 @@
             spawn();
         }
 
+        /**
+         * Moves each Tile to the left until they bump into something, if it´s the wall the next Tile will start moving, if it´s another Tile and
+         * they have the same Value, then they get merged into one, if their Numbers are different the next Tile will start moving
+         */
         public void moveLeft() {
             boolean moved = false;
             do {
@@ -156,6 +184,10 @@
             spawn();
         }
 
+        /**
+         * Moves each Tile to the right until they bump into something, if it´s the wall the next Tile will start moving, if it´s another Tile and
+         * they have the same Value, then they get merged into one, if their Numbers are different the next Tile will start moving
+         */
         public void moveRight() {
             boolean moved = false;
             do {
@@ -184,6 +216,10 @@
             } while (moved);
             spawn();
         }
+
+        /**
+         * Sets every Field in the Array to NULL
+         */
         public void clearBoard() {
             for(int i = 0; i < board.length; i++) {
                 for(int j = 0; j < board[0].length; j++) {
@@ -192,6 +228,12 @@
             }
         }
 
+        /**
+         *
+         * @param y - Y Coordinate
+         * @param x - X Coordinate
+         * @return the Tile with given Coordinates
+         */
         public Tile getTile(int y, int x) {
             return board[y][x];
         }
