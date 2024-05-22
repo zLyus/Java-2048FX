@@ -7,13 +7,13 @@
         public Tile[][] board;
         private boolean spawned;
 
-        public Board()  {
-            board = new Tile[4][4];
-        }
         public Board(int size) {
             board = new Tile[size][size];
         }
 
+        /**
+         * Generates Coordinates dependant on boardsize, checks if the slot for the coordinates is empty, if no it repeats
+         */
         public void spawn() {
             if (checkSpace() > 0) {
                 Random rnd = new Random();
@@ -34,6 +34,10 @@
             }
         }
 
+        /**
+         *
+         * @return highest Number
+         */
         public int getHighestNumber() {
             int highest = 0;
             for(int i = 0; i < board.length; i++) {
@@ -52,6 +56,10 @@
             return spawned;
         }
 
+        /**
+         *
+         * @return the amount of empty slots in the board
+         */
         public int checkSpace() {
             int count = 0;
             for (int col = 0; col < board.length; col++) {
@@ -69,6 +77,10 @@
         }
 
 
+        /**
+         * Goes through each Tile in the board and moves it until it collides with something, if its the border of the game Board its finished, if its another Tile
+         * it checks the Numbers and if they have the same Number they merge into one
+         */
         public void moveUp() {
             boolean moved = false;
             do {
@@ -98,6 +110,10 @@
             spawn();
         }
 
+        /**
+         * Goes through each Tile in the board and moves it until it collides with something, if its the border of the game Board its finished, if its another Tile
+         * it checks the Numbers and if they have the same Number they merge into one
+         */
         public void moveDown() {
             boolean moved = false;
             do {
@@ -127,6 +143,10 @@
             spawn();
         }
 
+        /**
+         * Goes through each Tile in the board and moves it until it collides with something, if its the border of the game Board its finished, if its another Tile
+         * it checks the Numbers and if they have the same Number they merge into one
+         */
         public void moveLeft() {
             boolean moved = false;
             do {
@@ -156,6 +176,10 @@
             spawn();
         }
 
+        /**
+         * Goes through each Tile in the board and moves it until it collides with something, if its the border of the game Board its finished, if its another Tile
+         * it checks the Numbers and if they have the same Number they merge into one
+         */
         public void moveRight() {
             boolean moved = false;
             do {
@@ -184,6 +208,10 @@
             } while (moved);
             spawn();
         }
+
+        /**
+         * Empty the board, which sets every value to NULL
+         */
         public void clearBoard() {
             for(int i = 0; i < board.length; i++) {
                 for(int j = 0; j < board[0].length; j++) {
@@ -192,6 +220,12 @@
             }
         }
 
+        /**
+         *
+         * @param y - Y coordinate
+         * @param x - X coordinate
+         * @return Tile from the coordinates
+         */
         public Tile getTile(int y, int x) {
             return board[y][x];
         }
