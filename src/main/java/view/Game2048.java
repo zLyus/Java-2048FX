@@ -7,10 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -89,16 +86,17 @@ public class Game2048 extends Application implements Serializable {
         row3.getChildren().addAll(gridPane);
 
         row1.setSpacing(10);
-        row1.setAlignment(Pos.CENTER);
 
         row2.setSpacing(10);
-        row2.setAlignment(Pos.CENTER);
-        row3.setAlignment(Pos.CENTER);
-        vbox.setAlignment(Pos.CENTER);
-        gridPane.setAlignment(Pos.CENTER);
 
         vbox.getChildren().addAll(row1, row2, row3);
+
         Scene gameScene = new Scene(vbox, 550, 550);
+        VBox.setVgrow(vbox, Priority.ALWAYS);
+
+        vbox.prefWidthProperty().bind(gameScene.widthProperty());
+        vbox.prefHeightProperty().bind(gameScene.heightProperty());
+
         gameStage.setScene(gameScene);
         gameStage.setTitle("Game 2048");
 
@@ -168,17 +166,17 @@ public class Game2048 extends Application implements Serializable {
 
 
 
-            if (selectedValue != null) {
+            if (selectedValue != null && !selectedValue.isEmpty()) {
                 size = Integer.parseInt(selectedValue);
-                //if(size > 0 && size <)
-                System.out.println(size);
-                board = new Board(size);
-                GRID_SIZE = size;
-                SQUARE_SIZE = (150 - size * 10);
+                if(size > 0) {
+                    System.out.println(size);
+                    board = new Board(size);
+                    GRID_SIZE = size;
+                    SQUARE_SIZE = 400 / size;
+                }
             } else {
                 board = new Board(4);
             }
-
             ctrl = new Controller(board);
             firstStage.hide();
             gameStage.show();
@@ -239,7 +237,6 @@ public class Game2048 extends Application implements Serializable {
         });
 
         gameScene.setOnKeyPressed(event -> {
-            System.out.println("Focus Owner:" + gameScene.getFocusOwner());
             switch (event.getCode()) {
                 case UP:
                 case W:
@@ -374,6 +371,7 @@ public class Game2048 extends Application implements Serializable {
      * @param board - the 2dimension array where the game is played
      */
     public void updateUI(GridPane gridPane, Board board) {
+        int textSize = 105 / GRID_SIZE;
         gridPane.getChildren().clear(); // Clear the GridPane before updating
         for (int col = 0; col < GRID_SIZE; col++) {
             for (int row = 0; row < GRID_SIZE; row++) {
@@ -387,14 +385,13 @@ public class Game2048 extends Application implements Serializable {
                 if (currentTile != null) {
                     text = new Text(String.valueOf(ctrl.getNumber(currentTile)));
                     if(colorPicker != null) {
-                        square.setFill(colorPicker.getColor(currentTile.getNumber()));
-                    } else {
-
+                        square.setFill(colorPicker.getColor(ctrl.getNumber(currentTile)));
                     }
-                    text.setFont(Font.font("Arial", FontWeight.BOLD, 30));
+
+                    text.setFont(Font.font("Arial", FontWeight.BOLD, textSize));
                 } else {
                     text = new Text(" ");
-                    text.setFont(Font.font("Arial", FontWeight.BOLD, 30));
+                    text.setFont(Font.font("Arial", FontWeight.BOLD, textSize));
                 }
                 StackPane stackPane = new StackPane(square, text);
                 GridPane.setRowIndex(stackPane, col);
