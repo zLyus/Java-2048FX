@@ -2,6 +2,8 @@ package view;
 
 import controller.Controller;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -63,6 +65,7 @@ public class Game2048 extends Application implements Serializable {
     private HBox firstRow4 = new HBox();
     private HBox firstRow5 = new HBox();
     private int indexToAdd = 0;
+    private boolean adjusting = false;
     int size;
 
 
@@ -84,22 +87,28 @@ public class Game2048 extends Application implements Serializable {
         row1.getChildren().addAll(startNewGameButton, resetHighScoreButton, lastGamesButton, changeThemeButton);
         row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
         row3.getChildren().addAll(gridPane);
-
         row1.setSpacing(10);
-
         row2.setSpacing(10);
 
         vbox.getChildren().addAll(row1, row2, row3);
 
         Scene gameScene = new Scene(vbox, 550, 550);
-        VBox.setVgrow(vbox, Priority.ALWAYS);
-
-        vbox.prefWidthProperty().bind(gameScene.widthProperty());
-        vbox.prefHeightProperty().bind(gameScene.heightProperty());
 
         gameStage.setScene(gameScene);
         gameStage.setTitle("Game 2048");
 
+        vbox.prefWidthProperty().bind(gameScene.widthProperty());
+        vbox.prefHeightProperty().bind(gameScene.heightProperty());
+
+        // Add ChangeListener to ensure the window remains square
+        gameScene.widthProperty().addListener((observable, oldSceneWidth, newSceneWidth) -> {
+            System.out.println(newSceneWidth);
+        });
+
+        gameScene.heightProperty().addListener((observable, oldSceneHeight, newSceneHeight) -> {
+            System.out.println(newSceneHeight);
+
+        });
         /**
          * Designs the "FirstStage", which shows a tutorial for the game and lets the user select a color theme
          */
