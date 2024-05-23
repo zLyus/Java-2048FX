@@ -31,20 +31,24 @@ public class Game2048 extends Application implements Serializable {
     private FileManager fileManager = new FileManager();
     private Stage endStage = new Stage();
     private Button restartButton = new Button("RestartGame");
+    private Button changeThemeButton = new Button("Change Theme");
     private Board board;
     private Label highScoreText = new Label("Highscore: ");
     private VBox vbox = new VBox();
     private Label highScoreValue = new Label("0");
     private Label currentScoreText = new Label("Current Score: ");
     private Label currentScoreValue = new Label("0");
+    private Button resetHighScoreButton = new Button("Reset Highscore");
     private ObservableList<String> observlist = FXCollections.observableArrayList();
     private ListView<String> listView = new ListView<>(observlist);
     private Stage lastGamesStage = new Stage();
     private GridPane lastGamesGridPane = new GridPane();
+    private Button lastGamesButton = new Button("Last Games");
     private Button backToGameButton = new Button("Back to Game");
     private Button themeChangedButton = new Button("Back to Game");
     private TileColor colorPicker;
     private Button goToGameButton = new Button("Lets Play!");
+    private Button startNewGameButton = new Button("Start new Game");
     private Button resetLastGames = new Button("Reset Last Games");
     private ComboBox<String> themeBox = new ComboBox<>();
     private GridPane changeThemeGridPane = new GridPane();
@@ -61,21 +65,13 @@ public class Game2048 extends Application implements Serializable {
     private HBox firstRow3 = new HBox();
     private HBox firstRow4 = new HBox();
     private HBox firstRow5 = new HBox();
-
-    private MenuBar menuBar = new MenuBar();
-    private Menu changeThemeButton = new Menu("Change Theme");
-    private Menu resetHighScoreButton = new Menu("Reset Highscore");
-    private Menu lastGamesButton = new Menu("Last Games");
-    private Menu startNewGameButton = new Menu("Start new Game");
-
-
-
     private int indexToAdd = 0;
     int size;
 
 
     @Override
     public void start(Stage firstStage) {
+
         /**
          * Loads the Highscore and Lastgames that were saved the last time the user played this game
          */
@@ -88,12 +84,13 @@ public class Game2048 extends Application implements Serializable {
 
         gridPane.setFocusTraversable(true);
 
-        menuBar.getMenus().addAll((Menu) startNewGameButton, (Menu) resetHighScoreButton, (Menu) lastGamesButton, (Menu) changeThemeButton);
-        row1.getChildren().add(menuBar);
+        row1.getChildren().addAll(startNewGameButton, resetHighScoreButton, lastGamesButton, changeThemeButton);
         row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
         row3.getChildren().addAll(gridPane);
 
         row1.setSpacing(10);
+        row1.setAlignment(Pos.CENTER);
+
         row2.setSpacing(10);
         row2.setAlignment(Pos.CENTER);
         row3.setAlignment(Pos.CENTER);
@@ -101,7 +98,7 @@ public class Game2048 extends Application implements Serializable {
         gridPane.setAlignment(Pos.CENTER);
 
         vbox.getChildren().addAll(row1, row2, row3);
-        Scene gameScene = new Scene(vbox, 1200, 800);
+        Scene gameScene = new Scene(vbox, 550, 550);
         gameStage.setScene(gameScene);
         gameStage.setTitle("Game 2048");
 
