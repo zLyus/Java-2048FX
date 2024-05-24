@@ -67,6 +67,7 @@ public class Game2048 extends Application implements Serializable {
     private int indexToAdd = 0;
     private boolean adjusting = false;
     int size;
+    boolean justreSized = false;
 
 
     @Override
@@ -99,15 +100,24 @@ public class Game2048 extends Application implements Serializable {
 
         vbox.prefWidthProperty().bind(gameScene.widthProperty());
         vbox.prefHeightProperty().bind(gameScene.heightProperty());
+        VBox.setVgrow(vbox, Priority.ALWAYS);
 
-        // Add ChangeListener to ensure the window remains square
         gameScene.widthProperty().addListener((observable, oldSceneWidth, newSceneWidth) -> {
-            System.out.println(newSceneWidth);
+            if(!justreSized) {
+                gameStage.setHeight((Double) newSceneWidth);
+                justreSized = true;
+            } else {
+                justreSized = false;
+            }
         });
 
         gameScene.heightProperty().addListener((observable, oldSceneHeight, newSceneHeight) -> {
-            System.out.println(newSceneHeight);
-
+            if(!justreSized) {
+                gameStage.setWidth((Double) newSceneHeight);
+                justreSized = true;
+            } else {
+                justreSized = false;
+            }
         });
         /**
          * Designs the "FirstStage", which shows a tutorial for the game and lets the user select a color theme
