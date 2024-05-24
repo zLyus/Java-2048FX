@@ -7,15 +7,20 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import model.*;
 
 import java.io.Serializable;
@@ -55,6 +60,8 @@ public class Game2048 extends Application implements Serializable {
     ComboBox<String> changeBox = new ComboBox<>();
     TextField gridInput = new TextField();
     Controller ctrl;
+    private Stage confirmNewGameStage = new Stage();
+    private GridPane cofnirmNewGameGridPane = new GridPane();
     private Label instruction = new Label("Hello, this is a game where you need to connect the same numbers with each other so the tiles merge into one. The goal is to reach the number 2048 by combining tiles. Use the WASD keys to move the tiles up, left, down, or right. When two tiles with the same number touch, they merge into one with the sum of the two numbers. Keep combining tiles to create larger numbers. Before you start please select a Color theme (you can always change it later) and the Size of your Board. Can you reach 2048? Good luck!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
@@ -65,7 +72,6 @@ public class Game2048 extends Application implements Serializable {
     private HBox firstRow4 = new HBox();
     private HBox firstRow5 = new HBox();
     private int indexToAdd = 0;
-    private boolean adjusting = false;
     int size;
     boolean justreSized = false;
 
@@ -88,23 +94,25 @@ public class Game2048 extends Application implements Serializable {
         row1.getChildren().addAll(startNewGameButton, resetHighScoreButton, lastGamesButton, changeThemeButton);
         row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
         row3.getChildren().addAll(gridPane);
+
+        setMainStageCenter();
+
         row1.setSpacing(10);
         row2.setSpacing(10);
 
         vbox.getChildren().addAll(row1, row2, row3);
+
+
 
         Scene gameScene = new Scene(vbox, 550, 550);
 
         gameStage.setScene(gameScene);
         gameStage.setTitle("Game 2048");
 
-        vbox.prefWidthProperty().bind(gameScene.widthProperty());
-        vbox.prefHeightProperty().bind(gameScene.heightProperty());
-        VBox.setVgrow(vbox, Priority.ALWAYS);
-
         gameScene.widthProperty().addListener((observable, oldSceneWidth, newSceneWidth) -> {
             if(!justreSized) {
                 gameStage.setHeight((Double) newSceneWidth);
+                setMainStageCenter();
                 justreSized = true;
             } else {
                 justreSized = false;
@@ -114,6 +122,7 @@ public class Game2048 extends Application implements Serializable {
         gameScene.heightProperty().addListener((observable, oldSceneHeight, newSceneHeight) -> {
             if(!justreSized) {
                 gameStage.setWidth((Double) newSceneHeight);
+                setMainStageCenter();
                 justreSized = true;
             } else {
                 justreSized = false;
@@ -151,7 +160,6 @@ public class Game2048 extends Application implements Serializable {
         /**
          * Designs the "LastGamesGridPane", which shows the last 3 games the Player has finished and the achieved Score
          */
-
         listView.prefHeight(95);
         listView.prefWidth(100);
 
@@ -164,7 +172,6 @@ public class Game2048 extends Application implements Serializable {
         /**
          * Designs the "ChangeThemeStage", which lets the user change the theme they selected
          */
-
         changeBox.getItems().addAll("Red", "Purple", "Green");
 
         changeThemeGridPane.add(changeBox, 0, 0);
@@ -308,10 +315,13 @@ public class Game2048 extends Application implements Serializable {
         });
     }
 
-    public void showMainStage() {
-        gameStage.show();
-    }
-
+   public void setMainStageCenter() {
+        vbox.setAlignment(Pos.CENTER);
+        row1.setAlignment(Pos.CENTER);
+        row2.setAlignment(Pos.CENTER);
+        row3.setAlignment(Pos.CENTER);
+        gridPane.setAlignment(Pos.CENTER);
+   }
     public ArrayList<String> convertListView() {
         ArrayList<String> list = new ArrayList<>();
         for (String item : observlist) {
@@ -398,7 +408,8 @@ public class Game2048 extends Application implements Serializable {
 
                 Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
 
-                square.setStroke(Color.BLACK);
+                square.setStroke(Color.color(0.733, 0.678, 0.627, 1.0));
+                square.setStrokeWidth(5);
 
                 Text text;
                 if (currentTile != null) {
@@ -406,7 +417,6 @@ public class Game2048 extends Application implements Serializable {
                     if(colorPicker != null) {
                         square.setFill(colorPicker.getColor(ctrl.getNumber(currentTile)));
                     }
-
                     text.setFont(Font.font("Arial", FontWeight.BOLD, textSize));
                 } else {
                     text = new Text(" ");
