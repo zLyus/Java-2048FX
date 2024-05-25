@@ -12,7 +12,7 @@
         }
 
         /**
-         * Generates Coordinates dependant on boardsize, checks if the slot for the coordinates is empty, if no it repeats
+         * Generates Coordinates dependent on boardsize, checks if the slot for the coordinates is empty, if no it repeats
          */
         public void spawn() {
             if (checkSpace() > 0) {

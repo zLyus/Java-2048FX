@@ -17,6 +17,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.*;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -45,6 +46,7 @@ public class Game2048 extends Application implements Serializable {
     private Button backToGameButton = new Button("Back to Game");
     private Button themeChangedButton = new Button("Back to Game");
     private TileColor colorPicker;
+    private Stage firstStage = new Stage();
     private Button goToGameButton = new Button("Lets Play!");
     private Button startNewGameButton = new Button("Start new Game");
     private Button resetLastGames = new Button("Reset Last Games");
@@ -58,13 +60,17 @@ public class Game2048 extends Application implements Serializable {
     private ComboBox<String> changeBox = new ComboBox<>();
     private TextField gridInput = new TextField();
     private Controller ctrl;
+    private Label continueLabel = new Label("Do you want to continue Last Game?");
+    private Button continueButton = new Button("Continue");
+    private Button dontContinueButton = new Button("Start a new Game");
+    private GridPane continueGrid = new GridPane();
     private Stage customStage = new Stage();
     private GridPane customGridPane = new GridPane();
     private Label startInstruction = new Label("starting Color");
     private TextField startInput = new TextField();
     private Button customButton = new Button("Custom Theme");
     private Button finishedCustomButton = new Button("Finish");
-    private Label instruction = new Label(" How to play: Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!");
+    private Label instruction = new Label("How to play: Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
     private HBox row3 = new HBox();
@@ -79,11 +85,18 @@ public class Game2048 extends Application implements Serializable {
 
 
     @Override
-    public void start(Stage firstStage) {
+    public void start(Stage continueStage) {
 
         /**
          * Loads the Highscore and Lastgames that were saved the last time the user played this game
          */
+        System.out.println(fileManager.loadBoard());
+        if(fileManager.loadBoard() == null) {
+            System.out.println("eraaaa");
+            continueStage.hide();
+            firstStage.show();
+        }
+
         setHighScore(fileManager.loadHighScore(), false);
         setLastGames(fileManager.loadLastGames());
         setCustomTheme(fileManager.loadCustomTheme());
@@ -170,9 +183,15 @@ public class Game2048 extends Application implements Serializable {
         firstStage.show();
 
         /**
+         * Designs the "ContinueStage", which lets the user play the game where they last stopped
+         */
+        continueGrid.add(continueLabel,0,0);
+        continueGrid.add(continueButton,1,0);
+        continueGrid.add(dontContinueButton,2,0);
+
+        /**
          * Designs the "CustomStage", which lets the user enter Colors (in hex code) for a custom Theme
          */
-
         startInput.setPromptText("hex Code");
 
         customGridPane.add(startInstruction, 0, 0);
@@ -308,7 +327,7 @@ public class Game2048 extends Application implements Serializable {
             } else {
                 String startColor = startInput2.getText().trim();
 
-                if (isValidHexCode(startColor) ) {
+                if (isValidHexCode(startColor)) {
                     colorPicker.setCustom(Color.web(startColor));
                 }
             }
@@ -346,8 +365,9 @@ public class Game2048 extends Application implements Serializable {
 
         gameStage.setOnCloseRequest(event -> {
             fileManager.saveLastGames(convertListView(), false);
-            fileManager.saveHighScore(board,false);
+            fileManager.saveHighScore(board, false);
             fileManager.saveCustomTheme(convertCustomThemes());
+            fileManager.saveBoard(board);
         });
 
         gameScene.setOnKeyPressed(event -> {
@@ -398,18 +418,23 @@ public class Game2048 extends Application implements Serializable {
             setHighScore(currentHighest, false);
         });
 
-        gameStage.setOnCloseRequest(event -> {
-            fileManager.saveHighScore(ctrl.getBoard(), false);
-            fileManager.saveLastGames(convertListView(), false);
-            fileManager.saveCustomTheme(convertCustomThemes());
+        dontContinueButton.setOnAction(event -> {
+            continueStage.hide();
+            firstStage.show();
         });
+
+        continueButton.setOnAction(event -> {
+            board = fileManager.loadBoard();
+            continueStage.hide();
+            firstStage.show();
+        });
+
     }
 
     public void setCustomTheme(String str) {
         startInput.setText(str);
         startInput2.setText(str);
     }
-
 
     public String convertCustomThemes() {
         String str = new String();

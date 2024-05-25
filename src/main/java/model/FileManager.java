@@ -66,6 +66,10 @@ public class FileManager implements Serializable {
         return arrayList;
         }
 
+    /**
+     *
+     * @param str is the hexCode of Custom Theme
+     */
     public void saveCustomTheme(String str) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Custom Theme"))) {
             oos.writeObject(str);
@@ -75,7 +79,6 @@ public class FileManager implements Serializable {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-
     }
 
     public String loadCustomTheme() {
@@ -86,6 +89,27 @@ public class FileManager implements Serializable {
             e.printStackTrace();
         }
         return str;
+    }
+
+    public void saveBoard(Board board) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Board"))) {
+            oos.writeObject(board);
+            oos.flush();
+        } catch (FileNotFoundException ex) {
+            throw new RuntimeException(ex);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public Board loadBoard() {
+        Board board = null;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Board"))) {
+            board = (Board) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return board;
     }
 }
 
