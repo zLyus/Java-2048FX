@@ -233,6 +233,9 @@ public class Game2048 extends Application implements Serializable {
             fileManager.saveCustomTheme(convertCustomThemes());
         });
 
+        /**
+         * Creates TileColor "colorpicker", which manages the color of each Tile
+         */
         goToGameButton.setOnAction(event -> {
             if (startInput.getText().isEmpty() || endInput.getText().isEmpty()) {
                 if (themeBox.getSelectionModel().getSelectedItem() == null) {
