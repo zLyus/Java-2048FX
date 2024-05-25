@@ -1,5 +1,7 @@
 package model;
 
+import javafx.scene.paint.Color;
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -63,4 +65,36 @@ public class FileManager implements Serializable {
         }
         return arrayList;
         }
+
+    public void saveCustomTheme(String[] array) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Custom Theme"))) {
+            if(array != null) {
+            for(String c : array) {
+                    oos.writeObject(c);
+                }
+            }
+            oos.flush();
+        } catch (FileNotFoundException ex) {
+            throw new RuntimeException(ex);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
     }
+
+    public String[] loadCustomTheme() {
+        String[] array = new String[2];
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Custom Theme"))) {
+            Object obj = ois.readObject();
+            if (obj instanceof String[]) {
+                array = (String[]) obj;
+            } else {
+                array = null;
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return array;
+    }
+}
+

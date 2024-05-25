@@ -90,11 +90,11 @@ public class Game2048 extends Application implements Serializable {
          */
         setHighScore(fileManager.loadHighScore(), false);
         setLastGames(fileManager.loadLastGames());
+        setCustomTheme(fileManager.loadCustomTheme());
 
         /**
          * Designs the mainStage where the Game is played
          */
-
         startNewGameButton.setFocusTraversable(false);
         resetHighScoreButton.setFocusTraversable(false);
         lastGamesButton.setFocusTraversable(false);
@@ -118,7 +118,7 @@ public class Game2048 extends Application implements Serializable {
         gameStage.setTitle("Game 2048");
 
         gameScene.widthProperty().addListener((observable, oldSceneWidth, newSceneWidth) -> {
-            if(!justreSized) {
+            if (!justreSized) {
                 gameStage.setHeight((Double) newSceneWidth);
                 setMainStageCenter();
                 justreSized = true;
@@ -128,7 +128,7 @@ public class Game2048 extends Application implements Serializable {
         });
 
         gameScene.heightProperty().addListener((observable, oldSceneHeight, newSceneHeight) -> {
-            if(!justreSized) {
+            if (!justreSized) {
                 gameStage.setWidth((Double) newSceneHeight);
                 setMainStageCenter();
                 justreSized = true;
@@ -143,7 +143,7 @@ public class Game2048 extends Application implements Serializable {
         themeBox.getItems().addAll("Red", "Purple", "Green");
         themeBox.setValue("Select Theme");
 
-        gridInput.setPrefSize(160,1);
+        gridInput.setPrefSize(160, 1);
         gridInput.setPromptText("Select Gridsize, example '4' ");
 
         instruction.setWrapText(true);
@@ -179,15 +179,15 @@ public class Game2048 extends Application implements Serializable {
         startInput.setPromptText("hex Code");
         endInput.setPromptText("hex Code");
 
-        customGridPane.add(startInstruction,0,0);
-        customGridPane.add(startInput,1,0);
-        customGridPane.add(endInstruction,0,1);
-        customGridPane.add(endInput,1,1);
-        customGridPane.add(finishedCustomButton,0,2);
+        customGridPane.add(startInstruction, 0, 0);
+        customGridPane.add(startInput, 1, 0);
+        customGridPane.add(endInstruction, 0, 1);
+        customGridPane.add(endInput, 1, 1);
+        customGridPane.add(finishedCustomButton, 0, 2);
 
         customGridPane.setPadding(new Insets(10));
 
-        Scene customScene = new Scene(customGridPane,300,150);
+        Scene customScene = new Scene(customGridPane, 300, 150);
         customStage.setScene(customScene);
         customStage.setTitle("Custom Themes");
 
@@ -230,10 +230,11 @@ public class Game2048 extends Application implements Serializable {
         finishedCustomButton.setOnAction(event -> {
             customStage.hide();
             firstStage.show();
+            fileManager.saveCustomTheme(convertCustomThemes());
         });
 
         goToGameButton.setOnAction(event -> {
-            if(startInput.getText().isEmpty() || endInput.getText().isEmpty()) {
+            if (startInput.getText().isEmpty() || endInput.getText().isEmpty()) {
                 if (themeBox.getSelectionModel().getSelectedItem() == null) {
                     colorPicker = new TileColor("Red");
                 } else {
@@ -253,7 +254,6 @@ public class Game2048 extends Application implements Serializable {
                 try {
                     size = Integer.parseInt(selectedValue);
                     if (size > 0) {
-                        System.out.println(size);
                         board = new Board(size);
                         GRID_SIZE = size;
                         SQUARE_SIZE = 400 / size;
@@ -322,6 +322,8 @@ public class Game2048 extends Application implements Serializable {
 
             changeThemeStage.hide();
             updateUI(gridPane, ctrl.getBoard());
+
+            fileManager.saveCustomTheme(convertCustomThemes());
         });
 
         changeThemeButton.setOnAction(event -> {
@@ -351,6 +353,8 @@ public class Game2048 extends Application implements Serializable {
 
         gameStage.setOnCloseRequest(event -> {
             fileManager.saveLastGames(convertListView(), false);
+            fileManager.saveHighScore(board,false);
+            fileManager.saveCustomTheme(convertCustomThemes());
         });
 
         gameScene.setOnKeyPressed(event -> {
@@ -361,7 +365,7 @@ public class Game2048 extends Application implements Serializable {
                 case DOWN, S:
                     ctrl.moveDown();
                     break;
-                case LEFT,  A:
+                case LEFT, A:
                     ctrl.moveLeft();
                     break;
                 case RIGHT, D:
@@ -400,21 +404,50 @@ public class Game2048 extends Application implements Serializable {
             setCurrentScore(currentHighest, false);
             setHighScore(currentHighest, false);
         });
+
+        gameStage.setOnCloseRequest(event -> {
+            fileManager.saveHighScore(ctrl.getBoard(), false);
+            fileManager.saveLastGames(convertListView(), false);
+            fileManager.saveCustomTheme(convertCustomThemes());
+        });
     }
 
-    private boolean isValidHexCode(String hexCode) {
+    public void setCustomTheme(String[] array) {
+        if (array != null) {
+            startInput.setText(array[0]);
+            startInput2.setText(array[0]);
+            endInput.setText(array[1]);
+            endInput2.setText(array[1]);
+        }
+    }
+
+    public String[] convertCustomThemes() {
+        String[] array = new String[2];
+        if(!startInput.getText().isEmpty() && !endInput.getText().isEmpty()) {
+            array[0] = startInput.getText().trim();
+            array[1] = endInput.getText().trim();
+        }
+        if(!startInput2.getText().isEmpty() && !endInput2.getText().isEmpty()) {
+            array[0] = startInput2.getText().trim();
+            array[1] = endInput2.getText().trim();
+        }
+
+        return array;
+    }
+
+    public boolean isValidHexCode(String hexCode) {
         // Regular expression for validating hex color code (e.g., #RRGGBB or #RGB)
         String hexPattern = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
         return hexCode.matches(hexPattern);
     }
 
-   public void setMainStageCenter() {
+    public void setMainStageCenter() {
         vbox.setAlignment(Pos.CENTER);
         row1.setAlignment(Pos.CENTER);
         row2.setAlignment(Pos.CENTER);
         row3.setAlignment(Pos.CENTER);
         gridPane.setAlignment(Pos.CENTER);
-   }
+    }
 
     public ArrayList<String> convertListView() {
         ArrayList<String> list = new ArrayList<>();
@@ -427,7 +460,6 @@ public class Game2048 extends Application implements Serializable {
     }
 
     public void addLastGamesToListView() {
-
         if (indexToAdd < listView.getItems().size()) {
             listView.getItems().remove(indexToAdd);
         }
@@ -441,8 +473,8 @@ public class Game2048 extends Application implements Serializable {
     }
 
     public void setHighScore(int checkHighScore, boolean reset) {
-        if(!reset) {
-            if(checkHighScore > getHighScore()) {
+        if (!reset) {
+            if (checkHighScore > getHighScore()) {
                 highScoreValue.setText(String.valueOf(checkHighScore));
             }
         } else {
@@ -451,18 +483,17 @@ public class Game2048 extends Application implements Serializable {
     }
 
     public void setCurrentScore(int checkCurrentScore, boolean reset) {
-        if(!reset) {
-            if(checkCurrentScore > getCurrentScore()) {
+        if (!reset) {
+            if (checkCurrentScore > getCurrentScore()) {
                 currentScoreValue.setText(String.valueOf(checkCurrentScore));
             }
         } else {
             currentScoreValue.setText("0");
         }
-
     }
 
     public void setLastGames(ArrayList<String> list) {
-        if(list != null) {
+        if (list != null) {
             for (String item : list) {
                 if (item != null || !(item.isEmpty())) {
                     listView.getItems().add(item);
@@ -479,12 +510,6 @@ public class Game2048 extends Application implements Serializable {
         return Integer.parseInt(currentScoreValue.getText());
     }
 
-    /**
-     * Goes through every Tile in the board and then draws the board filled with Rectangles and writes the Number Value as a Text,
-     * size of the Text is generated dependent on the boardsize
-     * @param gridPane - JavaFX Node where the board is drawn
-     * @param board - the 2dimension array where the game is played
-     */
     public void updateUI(GridPane gridPane, Board board) {
         int textSize = 105 / GRID_SIZE;
         gridPane.getChildren().clear(); // Clear the GridPane before updating
@@ -494,7 +519,7 @@ public class Game2048 extends Application implements Serializable {
 
                 Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
 
-                //0.733, 0.678, 0.627, 1.0 is the color of the official Game
+                // 0.733, 0.678, 0.627, 1.0 is the color of the official Game
 
                 square.setStroke(Color.BLACK);
                 square.setStrokeWidth(2);
@@ -502,7 +527,7 @@ public class Game2048 extends Application implements Serializable {
                 Text text;
                 if (currentTile != null) {
                     text = new Text(String.valueOf(ctrl.getNumber(currentTile)));
-                    if(colorPicker != null) {
+                    if (colorPicker != null) {
                         square.setFill(colorPicker.getColor(ctrl.getNumber(currentTile)));
                     }
                     text.setFont(Font.font("Arial", FontWeight.BOLD, textSize));
