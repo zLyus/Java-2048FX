@@ -23,10 +23,10 @@ public class TileColor {
     }
 
     // Constructor for custom color transitions
-    public TileColor(Color startColor, Color endColor) {
+    public TileColor(Color startColor) {
         this.usingCustomColors = true;
         this.startColor = startColor;
-        this.endColor = endColor;
+        this.endColor = Color.BLACK;
         tileRatios = new HashMap<>();
         initializeTileRatios();
     }
@@ -111,10 +111,10 @@ public class TileColor {
         }
     }
 
-    public void setCustom(Color start, Color end) {
+    public void setCustom(Color start) {
         usingCustomColors = true;
         this.startColor = start;
-        this.endColor = end;
+        this.endColor = Color.BLACK;
         tileRatios = new HashMap<>();
         initializeTileRatios();
     }

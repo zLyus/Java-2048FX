@@ -54,18 +54,14 @@ public class Game2048 extends Application implements Serializable {
     private Label orLabel = new Label("Or");
     private Label orLabel2 = new Label("Or use Custom Colors:");
     private Label startInstruction2 = new Label("starting Color");
-    private Label endInstruction2 = new Label("ending Color");
     private TextField startInput2 = new TextField();
-    private TextField endInput2 = new TextField();
     private ComboBox<String> changeBox = new ComboBox<>();
     private TextField gridInput = new TextField();
     private Controller ctrl;
     private Stage customStage = new Stage();
     private GridPane customGridPane = new GridPane();
     private Label startInstruction = new Label("starting Color");
-    private Label endInstruction = new Label("ending Color");
     private TextField startInput = new TextField();
-    private TextField endInput = new TextField();
     private Button customButton = new Button("Custom Theme");
     private Button finishedCustomButton = new Button("Finish");
     private Label instruction = new Label(" How to play: Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!");
@@ -176,13 +172,11 @@ public class Game2048 extends Application implements Serializable {
         /**
          * Designs the "CustomStage", which lets the user enter Colors (in hex code) for a custom Theme
          */
+
         startInput.setPromptText("hex Code");
-        endInput.setPromptText("hex Code");
 
         customGridPane.add(startInstruction, 0, 0);
         customGridPane.add(startInput, 1, 0);
-        customGridPane.add(endInstruction, 0, 1);
-        customGridPane.add(endInput, 1, 1);
         customGridPane.add(finishedCustomButton, 0, 2);
 
         customGridPane.setPadding(new Insets(10));
@@ -211,11 +205,9 @@ public class Game2048 extends Application implements Serializable {
 
         changeThemeGridPane.add(changeBox, 0, 0);
         changeThemeGridPane.add(orLabel2, 0, 1);
-        changeThemeGridPane.add(startInstruction2, 0, 2); // Moved down to row 2
-        changeThemeGridPane.add(startInput2, 1, 2); // Moved down to row 2
-        changeThemeGridPane.add(endInstruction2, 0, 3); // Moved down to row 3
-        changeThemeGridPane.add(endInput2, 1, 3); // Moved down to row 3
-        changeThemeGridPane.add(themeChangedButton, 0, 5); // Moved down to row 5
+        changeThemeGridPane.add(startInstruction2, 0, 2);
+        changeThemeGridPane.add(startInput2, 1, 2);
+        changeThemeGridPane.add(themeChangedButton, 0, 5);
 
 
         Scene changeThemeScene = new Scene(changeThemeGridPane, 550, 200);
@@ -237,7 +229,7 @@ public class Game2048 extends Application implements Serializable {
          * Creates TileColor "colorpicker", which manages the color of each Tile
          */
         goToGameButton.setOnAction(event -> {
-            if (startInput.getText().isEmpty() || endInput.getText().isEmpty()) {
+            if (startInput.getText() == null || startInput.getText().isEmpty()) {
                 if (themeBox.getSelectionModel().getSelectedItem() == null) {
                     colorPicker = new TileColor("Red");
                 } else {
@@ -245,9 +237,8 @@ public class Game2048 extends Application implements Serializable {
                 }
             } else {
                 String startColor = startInput.getText().trim();
-                String endColor = endInput.getText().trim();
-                if (isValidHexCode(startColor) && isValidHexCode(endColor)) {
-                    colorPicker = new TileColor(Color.web(startColor), Color.web(endColor));
+                if (isValidHexCode(startColor)) {
+                    colorPicker = new TileColor(Color.web(startColor));
                 }
             }
 
@@ -289,7 +280,6 @@ public class Game2048 extends Application implements Serializable {
                     }
                 });
             }
-            System.out.println(startInput.getText() + endInput.getText());
             ctrl = new Controller(board);
             firstStage.hide();
             gameStage.show();
@@ -311,15 +301,15 @@ public class Game2048 extends Application implements Serializable {
         });
 
         themeChangedButton.setOnAction(event -> {
-            if (startInput2.getText().isEmpty() || endInput2.getText().isEmpty()) {
+            if (startInput2.getText().isEmpty()) {
                 if (changeBox.getSelectionModel().getSelectedItem() != null) {
                     colorPicker.setPreset();
                 }
             } else {
                 String startColor = startInput2.getText().trim();
-                String endColor = endInput2.getText().trim();
-                if (isValidHexCode(startColor) && isValidHexCode(endColor)) {
-                    colorPicker.setCustom(Color.web(startColor), Color.web(endColor));
+
+                if (isValidHexCode(startColor) ) {
+                    colorPicker.setCustom(Color.web(startColor));
                 }
             }
 
@@ -415,27 +405,21 @@ public class Game2048 extends Application implements Serializable {
         });
     }
 
-    public void setCustomTheme(String[] array) {
-        if (array != null) {
-            startInput.setText(array[0]);
-            startInput2.setText(array[0]);
-            endInput.setText(array[1]);
-            endInput2.setText(array[1]);
-        }
+    public void setCustomTheme(String str) {
+        startInput.setText(str);
+        startInput2.setText(str);
     }
 
-    public String[] convertCustomThemes() {
-        String[] array = new String[2];
-        if(!startInput.getText().isEmpty() && !endInput.getText().isEmpty()) {
-            array[0] = startInput.getText().trim();
-            array[1] = endInput.getText().trim();
-        }
-        if(!startInput2.getText().isEmpty() && !endInput2.getText().isEmpty()) {
-            array[0] = startInput2.getText().trim();
-            array[1] = endInput2.getText().trim();
-        }
 
-        return array;
+    public String convertCustomThemes() {
+        String str = new String();
+        if (startInput.getText() != null && !startInput.getText().isEmpty()) {
+            str = startInput.getText().trim();
+        }
+        if (startInput2.getText() != null && !startInput2.getText().isEmpty()) {
+            str = startInput2.getText().trim();
+        }
+        return str;
     }
 
     public boolean isValidHexCode(String hexCode) {

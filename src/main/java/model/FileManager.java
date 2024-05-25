@@ -66,13 +66,9 @@ public class FileManager implements Serializable {
         return arrayList;
         }
 
-    public void saveCustomTheme(String[] array) {
+    public void saveCustomTheme(String str) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Custom Theme"))) {
-            if(array != null) {
-            for(String c : array) {
-                    oos.writeObject(c);
-                }
-            }
+            oos.writeObject(str);
             oos.flush();
         } catch (FileNotFoundException ex) {
             throw new RuntimeException(ex);
@@ -82,19 +78,14 @@ public class FileManager implements Serializable {
 
     }
 
-    public String[] loadCustomTheme() {
-        String[] array = new String[2];
+    public String loadCustomTheme() {
+        String str = new String();
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Custom Theme"))) {
-            Object obj = ois.readObject();
-            if (obj instanceof String[]) {
-                array = (String[]) obj;
-            } else {
-                array = null;
-            }
+            str = (String) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return array;
+        return str;
     }
 }
 
