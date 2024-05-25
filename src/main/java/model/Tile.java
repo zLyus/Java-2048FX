@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Tile {
+public class Tile implements Serializable {
 
     private int boardSize;
     private int number;
@@ -64,7 +65,6 @@ public class Tile {
         Random random = new Random();
         int randomValue = random.nextInt(totalProbability) + 1;
 
-        int result;
         if (randomValue <= totalProbability * 0.1) { //10%
             number = 4;
         } else { //90%

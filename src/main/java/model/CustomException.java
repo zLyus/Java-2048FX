@@ -1,6 +1,8 @@
 package model;
 
-public class CustomException extends RuntimeException {
+import java.io.Serializable;
+
+public class CustomException extends RuntimeException implements Serializable {
 
     public CustomException(String msg) {
         super(msg);

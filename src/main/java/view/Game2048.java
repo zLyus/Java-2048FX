@@ -17,7 +17,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.*;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
