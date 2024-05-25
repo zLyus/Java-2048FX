@@ -7,15 +7,32 @@ import java.util.Map;
 public class TileColor {
 
     private String currentTheme;
-    private Map<Integer, Color> colorMap;
+    public boolean usingCustomColors; // Flag to indicate if custom colors are being used
 
+    private Map<Integer, Color> colorMap;
+    private Color startColor;
+    private Color endColor;
+    private Map<Integer, Double> tileRatios;
+
+    // Constructor for predefined themes
     public TileColor(String theme) {
-        this.currentTheme = theme;
+        currentTheme = theme;
+        usingCustomColors = false;
         colorMap = new HashMap<>();
         initializeColorMap();
     }
 
+    // Constructor for custom color transitions
+    public TileColor(Color startColor, Color endColor) {
+        this.usingCustomColors = true;
+        this.startColor = startColor;
+        this.endColor = endColor;
+        tileRatios = new HashMap<>();
+        initializeTileRatios();
+    }
+
     private void initializeColorMap() {
+        colorMap = new HashMap<>();
         switch (currentTheme) {
             case "Red":
                 colorMap.put(2, Color.web("#eee4da"));
@@ -59,8 +76,52 @@ public class TileColor {
         }
     }
 
+    private void initializeTileRatios() {
+        int[] tileNumbers = {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048};
+        for (int i = 0; i < tileNumbers.length; i++) {
+            double ratio = (double) i / (tileNumbers.length - 1);
+            tileRatios.put(tileNumbers[i], ratio);
+        }
+    }
+
+    private Color interpolateColor(double ratio) {
+        // Convert start and end colors to grayscale equivalents
+        double startGray = startColor.getRed() * 0.3 + startColor.getGreen() * 0.59 + startColor.getBlue() * 0.11;
+        double endGray = endColor.getRed() * 0.3 + endColor.getGreen() * 0.59 + endColor.getBlue() * 0.11;
+
+        // Mix grayscale equivalents with original colors based on the ratio
+        double red = (1 - ratio) * startColor.getRed() + ratio * startGray;
+        double green = (1 - ratio) * startColor.getGreen() + ratio * startGray;
+        double blue = (1 - ratio) * startColor.getBlue() + ratio * startGray;
+
+        // Create the desaturated color
+        Color color = Color.rgb((int) (red * 255), (int) (green * 255), (int) (blue * 255));
+
+        return color;
+    }
+
+
+
     public Color getColor(int number) {
-        return colorMap.getOrDefault(number, Color.web("#cdc1b4"));
+        if (!usingCustomColors) {
+            return colorMap.getOrDefault(number, Color.web("#cdc1b4"));
+        } else {
+            double ratio = tileRatios.getOrDefault(number, 0.0);
+            return interpolateColor(ratio);
+        }
+    }
+
+    public void setCustom(Color start, Color end) {
+        usingCustomColors = true;
+        this.startColor = start;
+        this.endColor = end;
+        tileRatios = new HashMap<>();
+        initializeTileRatios();
+    }
+
+    public void setPreset() {
+        usingCustomColors = false;
+        this.currentTheme = "Red";
     }
 
 }

@@ -2,25 +2,19 @@ package view;
 
 import controller.Controller;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import model.*;
 
 import java.io.Serializable;
@@ -57,11 +51,23 @@ public class Game2048 extends Application implements Serializable {
     private ComboBox<String> themeBox = new ComboBox<>();
     private GridPane changeThemeGridPane = new GridPane();
     private Stage changeThemeStage = new Stage();
-    ComboBox<String> changeBox = new ComboBox<>();
-    TextField gridInput = new TextField();
-    Controller ctrl;
-    private Stage confirmNewGameStage = new Stage();
-    private GridPane cofnirmNewGameGridPane = new GridPane();
+    private Label orLabel = new Label("Or");
+    private Label orLabel2 = new Label("Or use Custom Colors:");
+    private Label startInstruction2 = new Label("starting Color");
+    private Label endInstruction2 = new Label("ending Color");
+    private TextField startInput2 = new TextField();
+    private TextField endInput2 = new TextField();
+    private ComboBox<String> changeBox = new ComboBox<>();
+    private TextField gridInput = new TextField();
+    private Controller ctrl;
+    private Stage customStage = new Stage();
+    private GridPane customGridPane = new GridPane();
+    private Label startInstruction = new Label("starting Color");
+    private Label endInstruction = new Label("ending Color");
+    private TextField startInput = new TextField();
+    private TextField endInput = new TextField();
+    private Button customButton = new Button("Custom Theme");
+    private Button finishedCustomButton = new Button("Finish");
     private Label instruction = new Label(" How to play: Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
@@ -106,8 +112,6 @@ public class Game2048 extends Application implements Serializable {
 
         vbox.getChildren().addAll(row1, row2, row3);
 
-
-
         Scene gameScene = new Scene(vbox, 550, 550);
 
         gameStage.setScene(gameScene);
@@ -132,6 +136,7 @@ public class Game2048 extends Application implements Serializable {
                 justreSized = false;
             }
         });
+
         /**
          * Designs the "FirstStage", which shows a tutorial for the game and lets the user select a color theme
          */
@@ -144,8 +149,13 @@ public class Game2048 extends Application implements Serializable {
         instruction.setWrapText(true);
         instruction.setStyle("-fx-alignment: center; -fx-text-alignment: center;");
 
+        Region space1 = new Region();
+        space1.setPrefWidth(10);
+        Region space2 = new Region();
+        space2.setPrefWidth(10);
+
         firstRow1.getChildren().add(instruction);
-        firstRow2.getChildren().add(themeBox);
+        firstRow2.getChildren().addAll(themeBox, space1, orLabel, space2, customButton);
         firstRow3.getChildren().add(gridInput);
         firstRow4.getChildren().add(goToGameButton);
 
@@ -164,6 +174,24 @@ public class Game2048 extends Application implements Serializable {
         firstStage.show();
 
         /**
+         * Designs the "CustomStage", which lets the user enter Colors (in hex code) for a custom Theme
+         */
+        startInput.setPromptText("hex Code");
+        endInput.setPromptText("hex Code");
+
+        customGridPane.add(startInstruction,0,0);
+        customGridPane.add(startInput,1,0);
+        customGridPane.add(endInstruction,0,1);
+        customGridPane.add(endInput,1,1);
+        customGridPane.add(finishedCustomButton,0,2);
+
+        customGridPane.setPadding(new Insets(10));
+
+        Scene customScene = new Scene(customGridPane,300,150);
+        customStage.setScene(customScene);
+        customStage.setTitle("Custom Themes");
+
+        /**
          * Designs the "LastGamesGridPane", which shows the last 3 games the Player has finished and the achieved Score
          */
         listView.prefHeight(95);
@@ -179,19 +207,44 @@ public class Game2048 extends Application implements Serializable {
          * Designs the "ChangeThemeStage", which lets the user change the theme they selected
          */
         changeBox.getItems().addAll("Red", "Purple", "Green");
+        changeBox.setPromptText("Themes");
 
         changeThemeGridPane.add(changeBox, 0, 0);
-        changeThemeGridPane.add(themeChangedButton, 1, 0);
+        changeThemeGridPane.add(orLabel2, 0, 1);
+        changeThemeGridPane.add(startInstruction2, 0, 2); // Moved down to row 2
+        changeThemeGridPane.add(startInput2, 1, 2); // Moved down to row 2
+        changeThemeGridPane.add(endInstruction2, 0, 3); // Moved down to row 3
+        changeThemeGridPane.add(endInput2, 1, 3); // Moved down to row 3
+        changeThemeGridPane.add(themeChangedButton, 0, 5); // Moved down to row 5
 
-        Scene changeThemeScene = new Scene(changeThemeGridPane, 400, 200);
+
+        Scene changeThemeScene = new Scene(changeThemeGridPane, 550, 200);
         changeThemeStage.setScene(changeThemeScene);
         changeThemeStage.setTitle("Change Theme");
 
+        customButton.setOnAction(event -> {
+            firstStage.hide();
+            customStage.show();
+        });
+
+        finishedCustomButton.setOnAction(event -> {
+            customStage.hide();
+            firstStage.show();
+        });
+
         goToGameButton.setOnAction(event -> {
-            if (themeBox.getSelectionModel().getSelectedItem() != null) {
-                colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
+            if(startInput.getText().isEmpty() || endInput.getText().isEmpty()) {
+                if (themeBox.getSelectionModel().getSelectedItem() == null) {
+                    colorPicker = new TileColor("Red");
+                } else {
+                    colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
+                }
             } else {
-                colorPicker = new TileColor("Red");
+                String startColor = startInput.getText().trim();
+                String endColor = endInput.getText().trim();
+                if (isValidHexCode(startColor) && isValidHexCode(endColor)) {
+                    colorPicker = new TileColor(Color.web(startColor), Color.web(endColor));
+                }
             }
 
             String selectedValue = gridInput.getText();
@@ -233,6 +286,7 @@ public class Game2048 extends Application implements Serializable {
                     }
                 });
             }
+            System.out.println(startInput.getText() + endInput.getText());
             ctrl = new Controller(board);
             firstStage.hide();
             gameStage.show();
@@ -254,11 +308,18 @@ public class Game2048 extends Application implements Serializable {
         });
 
         themeChangedButton.setOnAction(event -> {
-            if (changeBox.getSelectionModel().getSelectedItem() != null) {
-                colorPicker = new TileColor(changeBox.getSelectionModel().getSelectedItem());
+            if (startInput2.getText().isEmpty() || endInput2.getText().isEmpty()) {
+                if (changeBox.getSelectionModel().getSelectedItem() != null) {
+                    colorPicker.setPreset();
+                }
             } else {
-                System.out.println("No color selected");
+                String startColor = startInput2.getText().trim();
+                String endColor = endInput2.getText().trim();
+                if (isValidHexCode(startColor) && isValidHexCode(endColor)) {
+                    colorPicker.setCustom(Color.web(startColor), Color.web(endColor));
+                }
             }
+
             changeThemeStage.hide();
             updateUI(gridPane, ctrl.getBoard());
         });
@@ -339,6 +400,12 @@ public class Game2048 extends Application implements Serializable {
             setCurrentScore(currentHighest, false);
             setHighScore(currentHighest, false);
         });
+    }
+
+    private boolean isValidHexCode(String hexCode) {
+        // Regular expression for validating hex color code (e.g., #RRGGBB or #RGB)
+        String hexPattern = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
+        return hexCode.matches(hexPattern);
     }
 
    public void setMainStageCenter() {
@@ -427,7 +494,7 @@ public class Game2048 extends Application implements Serializable {
 
                 Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
 
-                //0.733, 0.678, 0.627, 1.0
+                //0.733, 0.678, 0.627, 1.0 is the color of the official Game
 
                 square.setStroke(Color.BLACK);
                 square.setStrokeWidth(2);
