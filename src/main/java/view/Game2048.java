@@ -62,7 +62,7 @@ public class Game2048 extends Application implements Serializable {
     Controller ctrl;
     private Stage confirmNewGameStage = new Stage();
     private GridPane cofnirmNewGameGridPane = new GridPane();
-    private Label instruction = new Label("Hello, this is a game where you need to connect the same numbers with each other so the tiles merge into one. The goal is to reach the number 2048 by combining tiles. Use the WASD keys to move the tiles up, left, down, or right. When two tiles with the same number touch, they merge into one with the sum of the two numbers. Keep combining tiles to create larger numbers. Before you start please select a Color theme (you can always change it later) and the Size of your Board. Can you reach 2048? Good luck!");
+    private Label instruction = new Label(" How to play: Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
     private HBox row3 = new HBox();
@@ -72,7 +72,7 @@ public class Game2048 extends Application implements Serializable {
     private HBox firstRow4 = new HBox();
     private HBox firstRow5 = new HBox();
     private int indexToAdd = 0;
-    int size;
+    int size = 0;
     boolean justreSized = false;
 
 
@@ -138,12 +138,14 @@ public class Game2048 extends Application implements Serializable {
         gridInput.setPromptText("Select Gridsize, example '4' ");
 
         instruction.setWrapText(true);
+        instruction.setStyle("-fx-alignment: center; -fx-text-alignment: center;");
 
         firstRow1.getChildren().add(instruction);
         firstRow2.getChildren().add(themeBox);
         firstRow3.getChildren().add(gridInput);
         firstRow4.getChildren().add(goToGameButton);
 
+        firstRow1.setAlignment(Pos.CENTER);
         firstRow2.setAlignment(Pos.CENTER);
         firstRow3.setAlignment(Pos.CENTER);
         firstRow4.setAlignment(Pos.CENTER);
@@ -152,7 +154,7 @@ public class Game2048 extends Application implements Serializable {
         firstVbox.setSpacing(5);
         firstVbox.getChildren().addAll(firstRow1, firstRow2, firstRow3, firstRow4, firstRow5);
 
-        Scene FirstScene = new Scene(firstVbox, 400, 250);
+        Scene FirstScene = new Scene(firstVbox, 300, 150);
         firstStage.setScene(FirstScene);
         firstStage.setTitle("Welcome!");
         firstStage.show();
@@ -190,18 +192,42 @@ public class Game2048 extends Application implements Serializable {
 
             String selectedValue = gridInput.getText();
 
-
-
             if (selectedValue != null && !selectedValue.isEmpty()) {
-                size = Integer.parseInt(selectedValue);
-                if(size > 0) {
-                    System.out.println(size);
-                    board = new Board(size);
-                    GRID_SIZE = size;
-                    SQUARE_SIZE = 400 / size;
+                try {
+                    size = Integer.parseInt(selectedValue);
+                    if (size > 0) {
+                        System.out.println(size);
+                        board = new Board(size);
+                        GRID_SIZE = size;
+                        SQUARE_SIZE = 400 / size;
+                    } else {
+                        board = new Board(4);
+                    }
+                } catch (NumberFormatException e) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Invalid Input");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Something went wrong, lets just go with a 4x4");
+                    alert.showAndWait().ifPresent(response -> {
+                        if (response == ButtonType.OK) {
+                            board = new Board(4);
+                            GRID_SIZE = 4;
+                            SQUARE_SIZE = 400 / 4;
+                        }
+                    });
                 }
             } else {
-                board = new Board(4);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Invalid Input");
+                alert.setHeaderText(null);
+                alert.setContentText("Something went wrong, lets just go with a 4x4");
+                alert.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+                        board = new Board(4);
+                        GRID_SIZE = 4;
+                        SQUARE_SIZE = 400 / 4;
+                    }
+                });
             }
             ctrl = new Controller(board);
             firstStage.hide();
@@ -332,10 +358,6 @@ public class Game2048 extends Application implements Serializable {
         return list;
     }
 
-    public void startSpawn() {
-        ctrl.startSpawn();
-    }
-
 
     public void addLastGamesToListView() {
 
@@ -395,7 +417,8 @@ public class Game2048 extends Application implements Serializable {
     }
 
     /**
-     * Goes through every Tile in the board and then draws the board filled with Rectangles and writen the Number Value as a String
+     * Goes through every Tile in the board and then draws the board filled with Rectangles and writes the Number Value as a Text,
+     * size of the Text is generated dependant on the boardsize
      * @param gridPane - JavaFX Node where the board is drawn
      * @param board - the 2dimension array where the game is played
      */
