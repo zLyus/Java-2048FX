@@ -89,7 +89,11 @@ public class Game2048 extends Application implements Serializable {
          * Designs the mainStage where the Game is played
          */
 
-        gridPane.setFocusTraversable(true);
+        startNewGameButton.setFocusTraversable(false);
+        resetHighScoreButton.setFocusTraversable(false);
+        lastGamesButton.setFocusTraversable(false);
+        changeThemeButton.setFocusTraversable(false);
+        row1.setFocusTraversable(false);
 
         row1.getChildren().addAll(startNewGameButton, resetHighScoreButton, lastGamesButton, changeThemeButton);
         row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
@@ -290,20 +294,16 @@ public class Game2048 extends Application implements Serializable {
 
         gameScene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case UP:
-                case W:
+                case UP, W:
                     ctrl.moveUp();
                     break;
-                case DOWN:
-                case S:
+                case DOWN, S:
                     ctrl.moveDown();
                     break;
-                case LEFT:
-                case A:
+                case LEFT,  A:
                     ctrl.moveLeft();
                     break;
-                case RIGHT:
-                case D:
+                case RIGHT, D:
                     ctrl.moveRight();
                     break;
                 default:
@@ -348,6 +348,7 @@ public class Game2048 extends Application implements Serializable {
         row3.setAlignment(Pos.CENTER);
         gridPane.setAlignment(Pos.CENTER);
    }
+
     public ArrayList<String> convertListView() {
         ArrayList<String> list = new ArrayList<>();
         for (String item : observlist) {
@@ -358,13 +359,11 @@ public class Game2048 extends Application implements Serializable {
         return list;
     }
 
-
     public void addLastGamesToListView() {
 
         if (indexToAdd < listView.getItems().size()) {
             listView.getItems().remove(indexToAdd);
         }
-
         listView.getItems().add(indexToAdd, (indexToAdd + 1) + ".) Achieved Score : " + getCurrentScore() + " Size: " + board.getBoardSize());
 
         indexToAdd++;
@@ -384,7 +383,6 @@ public class Game2048 extends Application implements Serializable {
         }
     }
 
-
     public void setCurrentScore(int checkCurrentScore, boolean reset) {
         if(!reset) {
             if(checkCurrentScore > getCurrentScore()) {
@@ -398,13 +396,11 @@ public class Game2048 extends Application implements Serializable {
 
     public void setLastGames(ArrayList<String> list) {
         if(list != null) {
-            for(String item : list) {
+            for (String item : list) {
                 if (item != null || !(item.isEmpty())) {
                     listView.getItems().add(item);
                 }
             }
-        } else {
-
         }
     }
 
@@ -418,7 +414,7 @@ public class Game2048 extends Application implements Serializable {
 
     /**
      * Goes through every Tile in the board and then draws the board filled with Rectangles and writes the Number Value as a Text,
-     * size of the Text is generated dependant on the boardsize
+     * size of the Text is generated dependent on the boardsize
      * @param gridPane - JavaFX Node where the board is drawn
      * @param board - the 2dimension array where the game is played
      */
@@ -431,8 +427,10 @@ public class Game2048 extends Application implements Serializable {
 
                 Rectangle square = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.WHITE);
 
-                square.setStroke(Color.color(0.733, 0.678, 0.627, 1.0));
-                square.setStrokeWidth(5);
+                //0.733, 0.678, 0.627, 1.0
+
+                square.setStroke(Color.BLACK);
+                square.setStrokeWidth(2);
 
                 Text text;
                 if (currentTile != null) {

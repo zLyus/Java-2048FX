@@ -6,7 +6,6 @@ import java.util.Map;
 
 public class TileColor {
 
-
     private String currentTheme;
     private Map<Integer, Color> colorMap;
 
@@ -30,7 +29,6 @@ public class TileColor {
                 colorMap.put(512, Color.web("#edc850"));
                 colorMap.put(1024, Color.web("#edc53f"));
                 colorMap.put(2048, Color.web("#edc22e"));
-                // Add more colors for higher numbers if needed
                 break;
             case "Purple":
                 colorMap.put(2, Color.web("#eee4f5"));
@@ -62,11 +60,7 @@ public class TileColor {
     }
 
     public Color getColor(int number) {
-        return colorMap.getOrDefault(number, Color.web("#cdc1b4")); // Default color for empty tiles
+        return colorMap.getOrDefault(number, Color.web("#cdc1b4"));
     }
 
-    public void setTheme(String theme) {
-        this.currentTheme = theme;
-        initializeColorMap();
-    }
 }
