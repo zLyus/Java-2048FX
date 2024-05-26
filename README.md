@@ -17,7 +17,7 @@ This game was created as a school project and I have come to find a liking in ma
 I will most likely stop working on this project after the deadline given by my school, but I might come back to it for Code Optimization or more Features.
 
 ## Screenshots
-![alt Screenshot1](https://github.com/zLyus/Java-2048FX/blob/master/src/main/resources/imgs/Sc1.png)
-![alt Screenshot2](https://github.com/zLyus/Java-2048FX/blob/master/src/main/resources/imgs/Sc2.png)
-![alt Screenshot3](https://github.com/zLyus/Java-2048FX/blob/master/src/main/resources/imgs/Sc3.png)
-![alt Screenshot4](https://github.com/zLyus/Java-2048FX/blob/master/src/main/resources/imgs/Sc4.png)
+![alt Screenshot1](https://github.com/zLyus/Java-2048FX/blob/master/src/main/resources/imgs/Sc1.png) <br>
+![alt Screenshot2](https://github.com/zLyus/Java-2048FX/blob/master/src/main/resources/imgs/Sc2.png) <br>
+![alt Screenshot3](https://github.com/zLyus/Java-2048FX/blob/master/src/main/resources/imgs/Sc3.png) <br>
+![alt Screenshot4](https://github.com/zLyus/Java-2048FX/blob/master/src/main/resources/imgs/Sc4.png) <br>
