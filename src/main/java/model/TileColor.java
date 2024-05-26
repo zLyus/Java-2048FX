@@ -131,13 +131,18 @@ public class TileColor {
         usingCustomColors = true;
         this.startColor = start;
         this.endColor = Color.BLACK;
+
         tileRatios = new HashMap<>();
+        colorMap = new HashMap<>();
         initializeTileRatios();
     }
 
-    public void setPreset() {
+    public void setPreset(String color) {
         usingCustomColors = false;
-        this.currentTheme = "Red";
+        this.currentTheme = color;
+        colorMap = new HashMap<>();
+        initializeColorMap();
+
     }
 
 }
