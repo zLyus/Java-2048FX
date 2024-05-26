@@ -89,7 +89,6 @@ public class Game2048 extends Application implements Serializable {
         /**
          * Loads the Highscore and Lastgames that were saved the last time the user played this game
          */
-        System.out.println(fileManager.loadBoard());
         if(fileManager.loadBoard() == null) {
             System.out.println("eraaaa");
             continueStage.hide();
@@ -179,14 +178,17 @@ public class Game2048 extends Application implements Serializable {
         Scene FirstScene = new Scene(firstVbox, 300, 150);
         firstStage.setScene(FirstScene);
         firstStage.setTitle("Welcome!");
-        firstStage.show();
 
         /**
          * Designs the "ContinueStage", which lets the user play the game where they last stopped
          */
         continueGrid.add(continueLabel,0,0);
-        continueGrid.add(continueButton,1,0);
-        continueGrid.add(dontContinueButton,2,0);
+        continueGrid.add(continueButton,0,1);
+        continueGrid.add(dontContinueButton,0,2);
+
+        Scene continueScene = new Scene(continueGrid, 300, 150);
+        continueStage.setScene(continueScene);
+        continueStage.show();
 
         /**
          * Designs the "CustomStage", which lets the user enter Colors (in hex code) for a custom Theme
@@ -425,9 +427,27 @@ public class Game2048 extends Application implements Serializable {
         continueButton.setOnAction(event -> {
             board = fileManager.loadBoard();
             continueStage.hide();
-            firstStage.show();
+            gameStage.show();
+            setBoard(fileManager.loadBoard());
         });
 
+    }
+
+    public void setBoard(Board b) {
+        board = b;
+        GRID_SIZE = board.board.length;
+        SQUARE_SIZE = 400 / GRID_SIZE;
+        ctrl = new Controller(board);
+        Color color = null;
+        if(startInput.getText() != null && !startInput.getText().isEmpty() && isValidHexCode(startInput.getText()) ) {
+            color = Color.web(startInput.getText());
+            colorPicker = new TileColor(color);
+        }
+        if(startInput2.getText() != null && !startInput2.getText().isEmpty() && isValidHexCode(startInput2.getText())) {
+            color = Color.web(startInput2.getText());
+            colorPicker = new TileColor(color);
+        }
+        updateUI(gridPane,board);
     }
 
     public void setCustomTheme(String str) {

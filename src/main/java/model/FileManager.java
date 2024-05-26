@@ -1,7 +1,5 @@
 package model;
 
-import javafx.scene.paint.Color;
-
 import java.io.*;
 import java.util.ArrayList;
 
