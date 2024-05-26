@@ -1,3 +1,5 @@
+main Features of this Project:
+
 Themes Presets
 Custom Themes (Algorithm that generates Fade, Serialized)
 Custom Gridsize (Algorithm for making Squares smaller the higher the Gridsize)
@@ -14,5 +16,7 @@ Change Theme (Presets and Custom Themes can change midgame)
 
 Window only resizes in shape of a square
 
-TODO: When program closed midgame, gamestatus is saved for next startup
-TODO: Make Nodes scale with Window Size
+When program closes midgame, gamestatus is saved, next Startup User is asked what he wants to do
+
+
+
