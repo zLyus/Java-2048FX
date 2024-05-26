@@ -1,6 +1,7 @@
 module com.example.java2048fx {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.graphics;
 
 
     exports model;

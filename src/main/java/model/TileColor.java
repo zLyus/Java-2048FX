@@ -32,6 +32,9 @@ public class TileColor {
         initializeTileRatios();
     }
 
+    /**
+     * Colors for Theme Presets
+     */
     private void initializeColorMap() {
         colorMap = new HashMap<>();
         switch (currentTheme) {
@@ -77,6 +80,9 @@ public class TileColor {
         }
     }
 
+    /**
+     * Generates the ratio for the transition between colors for each number
+     */
     private void initializeTileRatios() {
         int[] tileNumbers = {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048};
         for (int i = 0; i < tileNumbers.length; i++) {
@@ -85,6 +91,11 @@ public class TileColor {
         }
     }
 
+    /**
+     * Generates Color with the ratio that each number has been initialized with
+     * @param ratio - ratio for the transition
+     * @return Color with a transition for given Ratio
+     */
     private Color interpolateColor(double ratio) {
         // Convert start and end colors to grayscale equivalents
         double startGray = startColor.getRed() * 0.3 + startColor.getGreen() * 0.59 + startColor.getBlue() * 0.11;
@@ -102,7 +113,11 @@ public class TileColor {
     }
 
 
-
+    /**
+     *
+     * @param number - Number of the Tile
+     * @return Color that has been changed dependent on @number
+     */
     public Color getColor(int number) {
         if (!usingCustomColors) {
             return colorMap.getOrDefault(number, Color.web("#cdc1b4"));
