@@ -248,9 +248,11 @@ public class Game2048 extends Application implements Serializable {
             firstStage.show();
             if(themeBox.getSelectionModel().getSelectedItem() != null) {
                 colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
+                colorPicker.usingCustomColors = false;
             }
             if(startInput.getText() != null && !startInput.getText().isEmpty() && isValidHexCode(startInput.getText())) {
-                colorPicker = new TileColor(startInput.getText());
+                colorPicker = new TileColor(startInput.getText().trim());
+                colorPicker.usingCustomColors = true;
             }
             System.out.println("go");
             if(colorPicker.usingCustomColors) {
@@ -279,9 +281,11 @@ public class Game2048 extends Application implements Serializable {
         goToGameButton.setOnAction(event -> {
             if (startInput.getText() != null && !startInput.getText().isEmpty() && isValidHexCode(startInput.getText())) {
                 colorPicker = new TileColor(startInput.getText().trim());
+                colorPicker.setCustom(Color.web(startInput.getText().trim()));
             } else {
                 if(themeBox.getSelectionModel().getSelectedItem() != null) {
                     colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
+                    colorPicker.setPreset(themeBox.getSelectionModel().getSelectedItem());
                 }
             }
             if(!colorPicker.usingCustomColors) {
@@ -406,12 +410,15 @@ public class Game2048 extends Application implements Serializable {
             fileManager.saveHighScore(board, false);
             fileManager.saveBoard(board);
 
-            if(startInput.getText() != null && !startInput.getText().isEmpty() && isValidHexCode(startInput.getText())) {
+            if(colorPicker.usingCustomColors) {
+                System.out.println("custom colors ");
                 fileManager.saveCustomTheme(convertCustomThemes());
             } else {
                 if(themeBox.getSelectionModel().getSelectedItem() != null) {
+                    System.out.println("themebox");
                     fileManager.saveCustomTheme(themeBox.getSelectionModel().getSelectedItem());
                 }
+                System.out.println("changebox");
                 if(changeBox.getSelectionModel().getSelectedItem() != null) {
                     fileManager.saveCustomTheme(changeBox.getSelectionModel().getSelectedItem());
                 }
