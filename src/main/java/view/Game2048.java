@@ -19,6 +19,7 @@ import model.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Game2048 extends Application implements Serializable {
 
@@ -97,7 +98,10 @@ public class Game2048 extends Application implements Serializable {
 
         setHighScore(fileManager.loadHighScore(), false);
         setLastGames(fileManager.loadLastGames());
-        setCustomTheme(fileManager.loadCustomTheme());
+        String checkColor = fileManager.loadCustomTheme();
+        if(checkColor != null && !checkColor.isEmpty() && isValidHexCode(checkColor)) {
+            setCustomTheme(checkColor);
+        }
 
         /**
          * Designs the mainStage where the Game is played
@@ -242,24 +246,47 @@ public class Game2048 extends Application implements Serializable {
         finishedCustomButton.setOnAction(event -> {
             customStage.hide();
             firstStage.show();
-            fileManager.saveCustomTheme(convertCustomThemes());
+            if(themeBox.getSelectionModel().getSelectedItem() != null) {
+                colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
+            }
+            if(startInput.getText() != null && !startInput.getText().isEmpty() && isValidHexCode(startInput.getText())) {
+                colorPicker = new TileColor(startInput.getText());
+            }
+            System.out.println("go");
+            if(colorPicker.usingCustomColors) {
+                System.out.println("custom colors");
+                fileManager.saveCustomTheme(convertCustomThemes());
+            } else {
+                System.out.println("go 2");
+                if(themeBox.getSelectionModel().getSelectedItem() != null) {
+                    startInput.setText("");
+                    startInput2.setText("");
+                    System.out.println("theme");
+                    fileManager.saveCustomTheme(themeBox.getSelectionModel().getSelectedItem());
+                }
+                if(changeBox.getSelectionModel().getSelectedItem() != null) {
+                    System.out.println("change");
+                    startInput.setText("");
+                    startInput2.setText("");
+                    fileManager.saveCustomTheme(changeBox.getSelectionModel().getSelectedItem());
+                }
+            }
         });
 
         /**
          * Creates TileColor "colorpicker", which manages the color of each Tile
          */
         goToGameButton.setOnAction(event -> {
-            if (startInput.getText() == null || startInput.getText().isEmpty()) {
-                if (themeBox.getSelectionModel().getSelectedItem() == null) {
-                    colorPicker = new TileColor("Red");
-                } else {
+            if (startInput.getText() != null && !startInput.getText().isEmpty() && isValidHexCode(startInput.getText())) {
+                colorPicker = new TileColor(startInput.getText().trim());
+            } else {
+                if(themeBox.getSelectionModel().getSelectedItem() != null) {
                     colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
                 }
-            } else {
-                String startColor = startInput.getText().trim();
-                if (isValidHexCode(startColor)) {
-                    colorPicker = new TileColor(Color.web(startColor));
-                }
+            }
+            if(!colorPicker.usingCustomColors) {
+                startInput.setText("");
+                startInput2.setText("");
             }
 
             String selectedValue = gridInput.getText();
@@ -321,15 +348,25 @@ public class Game2048 extends Application implements Serializable {
         });
 
         themeChangedButton.setOnAction(event -> {
-            if (startInput2.getText().isEmpty()) {
-                if (changeBox.getSelectionModel().getSelectedItem() != null) {
-                    colorPicker.setPreset();
-                }
+            if (startInput2.getText() != null && !startInput2.getText().isEmpty() && isValidHexCode(startInput2.getText())) {
+                colorPicker.setCustom(Color.web(startInput2.getText().trim()));
             } else {
-                String startColor = startInput2.getText().trim();
-
-                if (isValidHexCode(startColor)) {
-                    colorPicker.setCustom(Color.web(startColor));
+                if(changeBox.getSelectionModel().getSelectedItem() != null) {
+                    colorPicker.setPreset(changeBox.getSelectionModel().getSelectedItem());
+                }
+            }
+            if(colorPicker.usingCustomColors) {
+                fileManager.saveCustomTheme(convertCustomThemes());
+            } else {
+                if (changeBox.getSelectionModel().getSelectedItem() != null) {
+                    startInput.setText("");
+                    startInput2.setText("");
+                    fileManager.saveCustomTheme(changeBox.getSelectionModel().getSelectedItem());
+                }
+                if (themeBox.getSelectionModel().getSelectedItem() != null) {
+                    startInput.setText("");
+                    startInput2.setText("");
+                    fileManager.saveCustomTheme(themeBox.getSelectionModel().getSelectedItem());
                 }
             }
 
@@ -367,8 +404,18 @@ public class Game2048 extends Application implements Serializable {
         gameStage.setOnCloseRequest(event -> {
             fileManager.saveLastGames(convertListView(), false);
             fileManager.saveHighScore(board, false);
-            fileManager.saveCustomTheme(convertCustomThemes());
             fileManager.saveBoard(board);
+
+            if(startInput.getText() != null && !startInput.getText().isEmpty() && isValidHexCode(startInput.getText())) {
+                fileManager.saveCustomTheme(convertCustomThemes());
+            } else {
+                if(themeBox.getSelectionModel().getSelectedItem() != null) {
+                    fileManager.saveCustomTheme(themeBox.getSelectionModel().getSelectedItem());
+                }
+                if(changeBox.getSelectionModel().getSelectedItem() != null) {
+                    fileManager.saveCustomTheme(changeBox.getSelectionModel().getSelectedItem());
+                }
+            }
         });
 
         gameScene.setOnKeyPressed(event -> {
@@ -426,6 +473,17 @@ public class Game2048 extends Application implements Serializable {
 
         continueButton.setOnAction(event -> {
             board = fileManager.loadBoard();
+            String color = fileManager.loadCustomTheme();
+            if(color != null && !color.isEmpty()) {
+                colorPicker = new TileColor(color);
+            } else {
+                if(themeBox.getSelectionModel().getSelectedItem() != null) {
+                    colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
+                }
+                if(changeBox.getSelectionModel().getSelectedItem() != null)  {
+                    colorPicker = new TileColor(changeBox.getSelectionModel().getSelectedItem());
+                }
+            }
             continueStage.hide();
             gameStage.show();
             setBoard(fileManager.loadBoard());
