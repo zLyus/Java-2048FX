@@ -1,34 +1,34 @@
 package controller;
 
-
 import model.Board;
 import model.Tile;
+import model.Board.Direction;
 
 public class Controller {
-    Board board;
+    private Board board;
 
     public Controller(Board currentBoard) {
         board = currentBoard;
     }
 
     public void moveUp() {
-        board.moveUp();
+        board.move(Direction.UP);
     }
 
     public void moveLeft() {
-        board.moveLeft();
+        board.move(Direction.LEFT);
     }
 
     public void moveDown() {
-        board.moveDown();
+        board.move(Direction.DOWN);
     }
 
     public void moveRight() {
-        board.moveRight();
+        board.move(Direction.RIGHT);
     }
 
     public void spawn() {
-         board.spawn();
+        board.spawn();
     }
 
     /**
@@ -38,6 +38,7 @@ public class Controller {
         board.spawn();
         board.spawn();
     }
+
     public void clearBoard() {
         board.clearBoard();
     }
@@ -51,14 +52,10 @@ public class Controller {
     }
 
     public Tile getTile(int x, int y) {
-        return board.getTile(x,y);
+        return board.getTile(x, y);
     }
 
     public int getNumber(Tile tile) {
         return tile.getNumber();
     }
-
-
-
-
 }
