@@ -14,6 +14,7 @@ public class Controller {
     public void move(Direction direction) {
         board.move(direction);
     }
+
     /**
      * Spawns two Tiles for the start of each game
      */

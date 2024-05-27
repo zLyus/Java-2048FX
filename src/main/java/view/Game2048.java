@@ -95,7 +95,12 @@ public class Game2048 extends Application implements Serializable {
             if(fileManager.loadBoard() == null) {
                 continueStage.hide();
                 firstStage.show();
+            } else {
+                continueStage.show();
             }
+        } else {
+            continueStage.hide();
+            firstStage.show();
         }
 
         if(Files.exists(Path.of("Highscore"))) {
@@ -202,7 +207,6 @@ public class Game2048 extends Application implements Serializable {
 
         Scene continueScene = new Scene(continueGrid, 300, 150);
         continueStage.setScene(continueScene);
-        continueStage.show();
 
         /**
          * Designs the "CustomStage", which lets the user enter Colors (in hex code) for a custom Theme
