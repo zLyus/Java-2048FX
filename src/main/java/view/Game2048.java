@@ -71,6 +71,7 @@ public class Game2048 extends Application implements Serializable {
     private TextField startInput = new TextField();
     private Button customButton = new Button("Custom Theme");
     private Button finishedCustomButton = new Button("Finish");
+    private Button botButton = new Button("Bot");
     private Label instruction = new Label("How to play: Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
@@ -80,6 +81,8 @@ public class Game2048 extends Application implements Serializable {
     private HBox firstRow3 = new HBox();
     private HBox firstRow4 = new HBox();
     private HBox firstRow5 = new HBox();
+    private Bot bot;
+    private Thread botThread;
     private int indexToAdd = 0;
     int size = 0;
     boolean justreSized = false;
@@ -125,9 +128,10 @@ public class Game2048 extends Application implements Serializable {
         resetHighScoreButton.setFocusTraversable(false);
         lastGamesButton.setFocusTraversable(false);
         changeThemeButton.setFocusTraversable(false);
+        botButton.setFocusTraversable(false);
         row1.setFocusTraversable(false);
 
-        row1.getChildren().addAll(startNewGameButton, resetHighScoreButton, lastGamesButton, changeThemeButton);
+        row1.getChildren().addAll(startNewGameButton, resetHighScoreButton, lastGamesButton, changeThemeButton, botButton);
         row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
         row3.getChildren().addAll(gridPane);
 
@@ -308,11 +312,13 @@ public class Game2048 extends Application implements Serializable {
                             alert.show();
                         } else {
                             board = new Board(size);
+                            bot = new Bot(board, this);
                             GRID_SIZE = size;
                             SQUARE_SIZE = 400 / size;
                         }
                     } else {
                         board = new Board(4);
+                        bot = new Bot(board, this);
                     }
                 } catch (NumberFormatException e) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -322,6 +328,7 @@ public class Game2048 extends Application implements Serializable {
                     alert.showAndWait().ifPresent(response -> {
                         if (response == ButtonType.OK) {
                             board = new Board(4);
+                            bot = new Bot(board, this);
                             GRID_SIZE = 4;
                             SQUARE_SIZE = 400 / 4;
                         }
@@ -335,6 +342,7 @@ public class Game2048 extends Application implements Serializable {
                 alert.showAndWait().ifPresent(response -> {
                     if (response == ButtonType.OK) {
                         board = new Board(4);
+                        bot = new Bot(board, this);
                         GRID_SIZE = 4;
                         SQUARE_SIZE = 400 / 4;
                     }
@@ -484,6 +492,7 @@ public class Game2048 extends Application implements Serializable {
 
         continueButton.setOnAction(event -> {
             board = fileManager.loadBoard();
+            bot = new Bot(board, this);
             String color = fileManager.loadCustomTheme();
             if(color != null && !color.isEmpty() && isValidHexCode(color)) {
                 colorPicker = new TileColor(color);
@@ -506,6 +515,17 @@ public class Game2048 extends Application implements Serializable {
             continueStage.hide();
             gameStage.show();
             setBoard(fileManager.loadBoard());
+        });
+
+        botButton.setOnAction(event -> {
+            if (bot.running) {
+                botThread.interrupt();
+                bot.running = false;
+            } else {
+                botThread = new Thread(bot);
+                botThread.start();
+                bot.running = true;
+            }
         });
 
     }
@@ -617,6 +637,9 @@ public class Game2048 extends Application implements Serializable {
     public int getCurrentScore() {
         return Integer.parseInt(currentScoreValue.getText());
     }
+    public GridPane getGridPane() {
+        return gridPane;
+    }
 
     public void updateUI(GridPane gridPane, Board board) {
         int textSize = 105 / GRID_SIZE;
@@ -647,6 +670,9 @@ public class Game2048 extends Application implements Serializable {
                 GridPane.setRowIndex(stackPane, col);
                 GridPane.setColumnIndex(stackPane, row);
                 gridPane.getChildren().add(stackPane);
+
+                setCurrentScore(board.getHighestNumber(), false);
+                setHighScore(board.getHighestNumber(), false);
             }
         }
     }
