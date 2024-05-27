@@ -78,7 +78,6 @@ public class Board implements Serializable {
     }
 
     /**
-     *
      * Goes through each Tile in the board and moves it until it collides with something,
      * if it's the border of the game Board it goes on to the next Tile, if its another Tile
      * it checks both Numbers and if they have the same Number they merge into one

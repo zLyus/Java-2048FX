@@ -71,7 +71,7 @@ public class Game2048 extends Application implements Serializable {
     private TextField startInput = new TextField();
     private Button customButton = new Button("Custom Theme");
     private Button finishedCustomButton = new Button("Finish");
-    private Button botButton = new Button("Bot");
+    private Button botButton = new Button("Start Bot");
     private Label instruction = new Label("How to play: Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
@@ -119,7 +119,6 @@ public class Game2048 extends Application implements Serializable {
                 setCustomTheme(checkColor);
             }
         }
-
 
         /**
          * Designs the mainStage where the Game is played
@@ -498,13 +497,9 @@ public class Game2048 extends Application implements Serializable {
                 colorPicker = new TileColor(color);
                 colorPicker.setCustom(Color.web(color));
             } else {
-                if(themeBox.getSelectionModel().getSelectedItem() != null) {
-                    colorPicker = new TileColor(themeBox.getSelectionModel().getSelectedItem());
-                    colorPicker.setPreset(themeBox.getSelectionModel().getSelectedItem());
-                }
-                if(changeBox.getSelectionModel().getSelectedItem() != null)  {
-                    colorPicker = new TileColor(changeBox.getSelectionModel().getSelectedItem());
-                    colorPicker.setPreset(themeBox.getSelectionModel().getSelectedItem());
+                if(color != null) {
+                    colorPicker = new TileColor(color);
+                    colorPicker.setPreset(color);
                 }
             }
             if(!colorPicker.usingCustomColors) {
@@ -521,10 +516,12 @@ public class Game2048 extends Application implements Serializable {
             if (bot.running) {
                 botThread.interrupt();
                 bot.running = false;
+                botButton.setText("Start Bot");
             } else {
                 botThread = new Thread(bot);
                 botThread.start();
                 bot.running = true;
+                botButton.setText("End Bot");
             }
         });
 

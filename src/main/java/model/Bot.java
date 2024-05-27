@@ -1,6 +1,5 @@
 package model;
 
-import controller.Controller;
 import javafx.application.Platform;
 import view.Game2048;
 
@@ -10,7 +9,6 @@ public class Bot implements Runnable {
 
     private Board board;
     private Game2048 view;
-    private Controller ctrl;
     private Random rnd = new Random();
     public boolean running;
 
@@ -21,6 +19,7 @@ public class Bot implements Runnable {
 
     @Override
     public void run() {
+
         System.out.println("run");
         int num = 0;
         while (board.isSpawned() && running) {
@@ -37,9 +36,5 @@ public class Bot implements Runnable {
             // Ensure UI updates are performed on the JavaFX Application Thread
             Platform.runLater(() -> view.updateUI(view.getGridPane(), board));
         }
-    }
-
-    public void setRunning(boolean running) {
-        this.running = running;
     }
 }
