@@ -87,6 +87,7 @@ public class Game2048 extends Application implements Serializable {
     int size = 0;
     boolean justreSized = false;
     boolean showContinueStage = false;
+    boolean usedBot = false;
 
 
     @Override
@@ -461,24 +462,7 @@ public class Game2048 extends Application implements Serializable {
             if (!ctrl.isSpawned()) {
                 addLastGamesToListView();
 
-                Alert lostAlert = new Alert(Alert.AlertType.INFORMATION);
-                lostAlert.setTitle("You Lost!");
-                lostAlert.setHeaderText("Your Score was: " + getCurrentScore());
-                lostAlert.setContentText("There wasn´t any space left so you lost");
-                lostAlert.getButtonTypes().set(0, ButtonType.OK);
-
-                lostAlert.showAndWait().ifPresent(response -> {
-                    setCurrentScore(0, true);
-                    if (response == ButtonType.OK) {
-                        ctrl.clearBoard();
-                        ctrl.startSpawn();
-                        updateUI(gridPane, ctrl.getBoard());
-                    }
-                });
-                lostAlert.setOnCloseRequest(Request -> {
-                    setCurrentScore(0, true);
-                    ctrl.clearBoard();
-                });
+                gameLost();
                 fileManager.saveHighScore(ctrl.getBoard(), false);
             }
             fileManager.saveHighScore(ctrl.getBoard(), false);
@@ -518,6 +502,7 @@ public class Game2048 extends Application implements Serializable {
         });
 
         botButton.setOnAction(event -> {
+            usedBot = true;
             if (bot.running) {
                 botThread.interrupt();
                 bot.running = false;
@@ -529,7 +514,6 @@ public class Game2048 extends Application implements Serializable {
                 botButton.setText("End Bot");
             }
         });
-
     }
 
     public void setBoard(Board b) {
@@ -590,10 +574,16 @@ public class Game2048 extends Application implements Serializable {
     }
 
     public void addLastGamesToListView() {
+        String bot = "";
         if (indexToAdd < listView.getItems().size()) {
             listView.getItems().remove(indexToAdd);
         }
-        listView.getItems().add(indexToAdd, (indexToAdd + 1) + ".) Achieved Score : " + getCurrentScore() + " Size: " + board.getBoardSize());
+
+        if(usedBot) {
+            bot = " used Bot";
+        }
+
+        listView.getItems().add(indexToAdd, (indexToAdd + 1) + ".) Achieved Score : " + getCurrentScore() + " Size: " + board.getBoardSize() + bot);
 
         indexToAdd++;
 
@@ -630,6 +620,27 @@ public class Game2048 extends Application implements Serializable {
                 }
             }
         }
+    }
+
+    public void gameLost() {
+        Alert lostAlert = new Alert(Alert.AlertType.INFORMATION);
+        lostAlert.setTitle("You Lost!");
+        lostAlert.setHeaderText("Your Score was: " + getCurrentScore());
+        lostAlert.setContentText("There wasn´t any space left so you lost");
+        lostAlert.getButtonTypes().set(0, ButtonType.OK);
+
+        lostAlert.showAndWait().ifPresent(response -> {
+            setCurrentScore(0, true);
+            if (response == ButtonType.OK) {
+                ctrl.clearBoard();
+                ctrl.startSpawn();
+                updateUI(gridPane, ctrl.getBoard());
+            }
+        });
+        lostAlert.setOnCloseRequest(Request -> {
+            setCurrentScore(0, true);
+            ctrl.clearBoard();
+        });
     }
 
     public int getHighScore() {
