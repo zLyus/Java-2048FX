@@ -145,4 +145,12 @@ public class TileColor {
 
     }
 
+    public String getCurrentTheme() {
+        return currentTheme;
+    }
+
+    public String getStartColor() {
+        return startColor.toString();
+    }
+
 }
