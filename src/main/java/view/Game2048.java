@@ -324,6 +324,7 @@ public class Game2048 extends Application implements Serializable {
 
         resetLastGames.setOnAction(event -> {
             listView.getItems().clear();
+            indexToAdd = 0;
             fileManager.saveLastGames(convertListView(), true);
         });
 
