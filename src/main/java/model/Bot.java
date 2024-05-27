@@ -14,7 +14,6 @@ public class Bot implements Runnable {
 
     public Bot(Board b, Game2048 application) {
         board = b;
-        board.print();
         view = application;
     }
 
