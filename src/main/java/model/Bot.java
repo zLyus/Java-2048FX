@@ -14,16 +14,14 @@ public class Bot implements Runnable {
 
     public Bot(Board b, Game2048 application) {
         board = b;
+        board.print();
         view = application;
     }
 
     @Override
     public void run() {
-
-        System.out.println("run");
         int num = 0;
         while (board.isSpawned() && running) {
-            System.out.println("loop");
             try {
                 Thread.sleep(250);
             } catch (InterruptedException e) {
@@ -34,6 +32,9 @@ public class Bot implements Runnable {
             board.move(value);
 
             // Ensure UI updates are performed on the JavaFX Application Thread
+
+            Platform.runLater(() -> view.setBoard(board));
+
             Platform.runLater(() -> view.updateUI(view.getGridPane(), board));
         }
     }
