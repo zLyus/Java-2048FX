@@ -278,6 +278,7 @@ public class Game2048 extends Application implements Serializable {
          * Creates TileColor "colorpicker", which manages the color of each Tile
          */
         goToGameButton.setOnAction(event -> {
+            boolean tooHigh = false;
             if (startInput.getText() != null && !startInput.getText().isEmpty() && isValidHexCode(startInput.getText())) {
                 colorPicker = new TileColor(startInput.getText().trim());
                 colorPicker.setCustom(Color.web(startInput.getText().trim()));
@@ -298,6 +299,14 @@ public class Game2048 extends Application implements Serializable {
                 try {
                     size = Integer.parseInt(selectedValue);
                     if (size > 0) {
+                        if(size > 25) {
+                            tooHigh = true;
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText("Too High!");
+                            alert.setContentText("For the safety of your Hardware i have set the Upper Limit of the Size to 25");
+                            alert.show();
+                        }
                         board = new Board(size);
                         GRID_SIZE = size;
                         SQUARE_SIZE = 400 / size;
@@ -330,11 +339,13 @@ public class Game2048 extends Application implements Serializable {
                     }
                 });
             }
-            ctrl = new Controller(board);
-            firstStage.hide();
-            gameStage.show();
-            ctrl.startSpawn();
-            updateUI(gridPane, ctrl.getBoard());
+            if(!tooHigh) {
+                ctrl = new Controller(board);
+                firstStage.hide();
+                gameStage.show();
+                ctrl.startSpawn();
+                updateUI(gridPane, ctrl.getBoard());
+            }
         });
 
         resetLastGames.setOnAction(event -> {
