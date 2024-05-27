@@ -304,12 +304,13 @@ public class Game2048 extends Application implements Serializable {
                             Alert alert = new Alert(Alert.AlertType.ERROR);
                             alert.setTitle("Error");
                             alert.setHeaderText("Too High!");
-                            alert.setContentText("For the safety of your Hardware i have set the Upper Limit of the Size to 25");
+                            alert.setContentText("For the safety of your hardware maximum size is 25");
                             alert.show();
+                        } else {
+                            board = new Board(size);
+                            GRID_SIZE = size;
+                            SQUARE_SIZE = 400 / size;
                         }
-                        board = new Board(size);
-                        GRID_SIZE = size;
-                        SQUARE_SIZE = 400 / size;
                     } else {
                         board = new Board(4);
                     }
