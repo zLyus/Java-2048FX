@@ -11,7 +11,6 @@ public class Bot implements Runnable {
     private Game2048 view;
     private Random rnd = new Random();
     public boolean running;
-    public boolean lost;
 
     public Bot(Board b, Game2048 application) {
         board = b;
