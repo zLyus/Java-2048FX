@@ -378,25 +378,22 @@ public class Game2048 extends Application implements Serializable {
         });
 
         themeChangedButton.setOnAction(event -> {
+            startInput.setText("");
             if(!convertCustomThemes().isEmpty()) {
                 String color = convertCustomThemes();
                 colorPicker.setCustom(Color.web(color));
                 fileManager.saveCustomTheme(color);
-
             } else {
                 if (changeBox.getSelectionModel().getSelectedItem() != null) {
                     colorPicker.setPreset(changeBox.getSelectionModel().getSelectedItem());
                     fileManager.saveCustomTheme(changeBox.getSelectionModel().getSelectedItem());
                 }
-
                 if (!colorPicker.usingCustomColors) {
                     startInput.setText("");
                     startInput2.setText("");
                 }
 
             }
-
-
 
             changeThemeStage.hide();
             updateUI(gridPane, ctrl.getBoard());
@@ -511,7 +508,7 @@ public class Game2048 extends Application implements Serializable {
                 botThread = new Thread(bot);
                 botThread.start();
                 bot.running = true;
-                botButton.setText("End Bot");
+                botButton.setText("Stop Bot");
             }
         });
     }
@@ -623,6 +620,7 @@ public class Game2048 extends Application implements Serializable {
     }
 
     public void gameLost() {
+        botButton.setText("Start Bot");
         Alert lostAlert = new Alert(Alert.AlertType.INFORMATION);
         lostAlert.setTitle("You Lost!");
         lostAlert.setHeaderText("Your Score was: " + getCurrentScore());
