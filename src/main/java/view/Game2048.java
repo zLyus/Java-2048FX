@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Game2048 extends Application implements Serializable {
 
@@ -417,16 +416,16 @@ public class Game2048 extends Application implements Serializable {
         gameScene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case UP, W:
-                    ctrl.moveUp();
+                    ctrl.move(Board.Direction.UP);
                     break;
                 case DOWN, S:
-                    ctrl.moveDown();
+                    ctrl.move(Board.Direction.DOWN);
                     break;
                 case LEFT, A:
-                    ctrl.moveLeft();
+                    ctrl.move(Board.Direction.LEFT);
                     break;
                 case RIGHT, D:
-                    ctrl.moveRight();
+                    ctrl.move(Board.Direction.RIGHT);
                     break;
                 default:
                     break;

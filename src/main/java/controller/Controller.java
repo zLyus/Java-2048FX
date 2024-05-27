@@ -11,26 +11,9 @@ public class Controller {
         board = currentBoard;
     }
 
-    public void moveUp() {
-        board.move(Direction.UP);
+    public void move(Direction direction) {
+        board.move(direction);
     }
-
-    public void moveLeft() {
-        board.move(Direction.LEFT);
-    }
-
-    public void moveDown() {
-        board.move(Direction.DOWN);
-    }
-
-    public void moveRight() {
-        board.move(Direction.RIGHT);
-    }
-
-    public void spawn() {
-        board.spawn();
-    }
-
     /**
      * Spawns two Tiles for the start of each game
      */
