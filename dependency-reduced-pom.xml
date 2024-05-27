@@ -19,7 +19,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>view.Game2048</mainClass>
+                  <mainClass>view.Main</mainClass>
                 </transformer>
               </transformers>
             </configuration>

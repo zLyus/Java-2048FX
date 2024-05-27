@@ -18,6 +18,8 @@ import javafx.stage.Stage;
 import model.*;
 
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -88,19 +90,29 @@ public class Game2048 extends Application implements Serializable {
     public void start(Stage continueStage) {
 
         /**
-         * Loads the Highscore and Lastgames that were saved the last time the user played this game
+         * Loads all serialized Items
          */
-        if(fileManager.loadBoard() == null) {
-            continueStage.hide();
-            firstStage.show();
+        if(Files.exists(Path.of("Board"))) {
+            if(fileManager.loadBoard() == null) {
+                continueStage.hide();
+                firstStage.show();
+            }
         }
 
-        setHighScore(fileManager.loadHighScore(), false);
-        setLastGames(fileManager.loadLastGames());
-        String checkColor = fileManager.loadCustomTheme();
-        if(checkColor != null && !checkColor.isEmpty() && isValidHexCode(checkColor)) {
-            setCustomTheme(checkColor);
+        if(Files.exists(Path.of("Highscore"))) {
+            setHighScore(fileManager.loadHighScore(), false);
         }
+        if(Files.exists(Path.of("LastGames"))) {
+            setLastGames(fileManager.loadLastGames());
+        }
+        if(Files.exists(Path.of("Custom Theme"))) {
+            String checkColor = fileManager.loadCustomTheme();
+            if(checkColor != null && !checkColor.isEmpty() && isValidHexCode(checkColor)) {
+                colorPicker = new TileColor(Color.web(checkColor));
+                setCustomTheme(checkColor);
+            }
+        }
+
 
         /**
          * Designs the mainStage where the Game is played
@@ -622,5 +634,9 @@ public class Game2048 extends Application implements Serializable {
                 gridPane.getChildren().add(stackPane);
             }
         }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
