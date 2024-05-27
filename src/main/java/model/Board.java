@@ -153,21 +153,6 @@ public class Board implements Serializable {
         }
     }
 
-    public void print() {
-        for(int i = 0; i < board.length; i++) {
-            for(int j = 0; j < board[i].length; j++) {
-                if(board[i][j] != null) {
-                    System.out.print(board[i][j].getNumber());
-                } else {
-                    System.out.print("0");
-                }
-                System.out.print("  ");
-            }
-            System.out.println();
-        }
-    }
-
-
     /**
      * @param y - Y coordinate
      * @param x - X coordinate
