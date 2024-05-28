@@ -132,6 +132,17 @@ public class Game2048 extends Application implements Serializable {
         botButton.setFocusTraversable(false);
         row1.setFocusTraversable(false);
 
+        startNewGameButton.setPadding(new Insets(5));
+        resetHighScoreButton.setPadding(new Insets(5));
+        lastGamesButton.setPadding(new Insets(5));
+        changeThemeButton.setPadding(new Insets(5));
+        botButton.setPadding(new Insets(5));
+
+        highScoreText.setFont(Font.font("Comic", FontWeight.MEDIUM, 13));
+        highScoreValue.setFont(Font.font("Comic", FontWeight.MEDIUM, 13));
+        currentScoreText.setFont(Font.font("Comic", FontWeight.MEDIUM, 13));
+        currentScoreValue.setFont(Font.font("Comic", FontWeight.MEDIUM, 13));
+
         row1.getChildren().addAll(startNewGameButton, resetHighScoreButton, lastGamesButton, changeThemeButton, botButton);
         row2.getChildren().addAll(highScoreText, highScoreValue, currentScoreText, currentScoreValue);
         row3.getChildren().addAll(gridPane);
@@ -330,7 +341,7 @@ public class Game2048 extends Application implements Serializable {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Invalid Input");
                     alert.setHeaderText(null);
-                    alert.setContentText("Something went wrong, lets just go with a 4x4");
+                    alert.setContentText("It seems like something went wrong with your Gridsize, lets just go with a 4x4");
                     alert.showAndWait().ifPresent(response -> {
                         if (response == ButtonType.OK) {
                             board = new Board(4);

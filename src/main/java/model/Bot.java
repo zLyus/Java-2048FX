@@ -201,7 +201,7 @@ public class Bot implements Runnable {
     }
 
     private double getIsolatedTilePenalty(Board board) {
-        double penalty = 0;
+        double penalty = -1;
         Tile[][] grid = board.board;
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
