@@ -42,4 +42,6 @@ public class Controller {
     public int getNumber(Tile tile) {
         return tile.getNumber();
     }
+
+    public int getHighestNumber() {return board.getHighestNumber();}
 }

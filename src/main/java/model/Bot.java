@@ -3,13 +3,11 @@ package model;
 import javafx.application.Platform;
 import view.Game2048;
 
-import java.util.Random;
 
 public class Bot implements Runnable {
 
     private Board board;
     private Game2048 view;
-    private Random rnd = new Random();
     public boolean running;
 
     public Bot(Board b, Game2048 application) {
@@ -21,7 +19,7 @@ public class Bot implements Runnable {
     public void run() {
         while (board.isSpawned() && running) {
             try {
-                Thread.sleep(100);  // Change sleep time to 100ms
+                Thread.sleep(1);  // Change sleep time to 100ms
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -38,6 +36,10 @@ public class Bot implements Runnable {
                 running = false;
                 Platform.runLater(() -> view.gameLost());
             }
+            if(board.getHighestNumber() == 2048) {
+                running = false;
+                Platform.runLater(() -> view.gameWon());
+            }
         }
     }
 
@@ -49,7 +51,7 @@ public class Bot implements Runnable {
         for (Board.Direction direction : directions) {
             Board clonedBoard = cloneBoard(board); // Clone the board to simulate the move
             if (simulateMove(clonedBoard, direction)) {
-                double score = expectimax(clonedBoard, 4, false); // Using depth 4 for expectimax
+                double score = expectimax(clonedBoard, 6, false); // Using depth 4 for expectimax
                 if (score > bestScore) {
                     bestScore = score;
                     bestMove = direction;

@@ -98,13 +98,13 @@ public class Game2048 extends Application implements Serializable {
          */
         if(Files.exists(Path.of("Board"))) {
             if(fileManager.loadBoard() == null) {
-                continueStage.hide();
                 firstStage.show();
+                showContinueStage = false;
             } else {
                 showContinueStage = true;
             }
         } else {
-            continueStage.hide();
+            showContinueStage = false;
             firstStage.show();
         }
 
@@ -426,6 +426,8 @@ public class Game2048 extends Application implements Serializable {
         });
 
         gameStage.setOnCloseRequest(event -> {
+            botThread = new Thread(bot);
+            botThread.interrupt();
             fileManager.saveLastGames(convertListView(), false);
             fileManager.saveHighScore(board, false);
             fileManager.saveBoard(board);
@@ -466,6 +468,9 @@ public class Game2048 extends Application implements Serializable {
             int currentHighest = ctrl.getBoard().getHighestNumber();
             setCurrentScore(currentHighest, false);
             setHighScore(currentHighest, false);
+            if(ctrl.getHighestNumber() == 2048) {
+                gameWon();
+            }
         });
 
         dontContinueButton.setOnAction(event -> {
@@ -638,6 +643,22 @@ public class Game2048 extends Application implements Serializable {
         lostAlert.setOnCloseRequest(Request -> {
             setCurrentScore(0, true);
             ctrl.clearBoard();
+        });
+    }
+
+    public void gameWon() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("You Won!");
+        alert.setHeaderText("You managed to get to 2048!");
+        if(usedBot) {
+            alert.setContentText("Now try it without the bot!");
+        }
+        alert.showAndWait().ifPresent(response -> {
+            if(response == ButtonType.OK) {
+                ctrl.clearBoard();
+                ctrl.startSpawn();
+                updateUI(gridPane, ctrl.getBoard());
+            }
         });
     }
 
