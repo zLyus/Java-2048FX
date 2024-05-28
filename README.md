@@ -14,32 +14,6 @@ This game was created as a school project and I have come to find a liking in ma
 
 I will still most likely stop working on this project after the deadline given by my school, but I might come back to it for Code Optimization or more Features.
 
-## Arbeitsteilung (Für die Moodle Abgabe)
-Dieser Abschnitt ist nur für die Moodle Abgabe und wird nicht auf Github veröffentlicht (deswegen jetzt auf Deutsch). <br>
-Folgende Aussagen werden durch die öffentliche Github Commit History belegt. <br>
-
-Ich habe schon am Anfang bemerkt das Bernhard mir keine große Hilfe sein wird, als er bei den leichten Aufgabe
-die ich ihm für den Anfang gab scheiterte (Set-Methoden), doch dachte ich mir das er mit etwas Lernbereitschaft
-und meiner Hilfe doch noch etwas beitragen könnte. <br>
-
-So sind dann die nächsten Wochen vergangen in denen ich größtenteils regelmäßig gearbeitet habe während Bernhard
-keinen Einsatz zeigte.
-
-Als ich dann bei der PLÜ ein "Nicht Genügend" bekam, habe ich nochmal sehr viel Zeit in das Projekt gesteckt
-und habe somit die letzten 1-2 Wochen vor Projektabgabe täglich jede Gelegenhenheit genutzt um noch ein Feature
-oder noch eine Optimierung hinzuzufügen.
-
-Am Samstag vor der Abgabe, (24.05), meldete sich Bernhard bei mir, er fragte was noch offen ist, daraufhin habe ich ihm auch die
-Feature / TODO Liste geschickt. Folglich hat er es am selben Tag (ein Paar Tage vor der Abgabe) endlich mal
-geschafft dem GitHub Repository beizutreten.
-
-Am Sonntag (25.05), hat er einen Commit gemacht, der aus den 4 Move Methoden (für jede Richtung einen),
-mithilfe von Enums eine einzige Methode gemacht hat. Dazu lieferte er keine Kommentare oder Dokumentation und
-ich musste mir die Methode, die meiner Meinung nach wahrscheinlich von ChatGPT generiert wurde (zu 100% weiß ich es nicht),
-selber anschauen und verstehen um die fehlende Dokumentation hinzuzufügen.
-
-Das war auch wieder der letzte Beitrag von Bernhard.
-
 ## Description
 Based on the original Game with a lot more Features for a better User Experience <br>
 - Saves the Games you played via via Java Serialization
