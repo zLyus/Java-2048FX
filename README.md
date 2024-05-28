@@ -75,6 +75,6 @@ Either use the Arrow Keys or WASD to move the tiles. <br>
 
 ## Screenshots
 ![alt Screenshot1](https://raw.githubusercontent.com/zLyus/Java-2048FX/master/src/main/resources/imgs/Sc1.png) <br>
-![alt Screenshot2](https://raw.githubusercontent.com/zLyus/Java-2048FX/master/src/main/resources/imgs/Sc2.png) <br>
+![alt Screenshot2](https://raw.githubusercontent.com/zLyus/Java-2048FX/master/src/main/resources/imgs/Sc5.png) <br>
 ![alt Screenshot3](https://raw.githubusercontent.com/zLyus/Java-2048FX/master/src/main/resources/imgs/Sc3.png) <br>
 ![alt Screenshot4](https://raw.githubusercontent.com/zLyus/Java-2048FX/master/src/main/resources/imgs/Sc4.png) <br>
