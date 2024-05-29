@@ -72,6 +72,7 @@ public class Game2048 extends Application implements Serializable {
     private Button customButton = new Button("Custom Theme");
     private Button finishedCustomButton = new Button("Finish");
     private Button botButton = new Button("Start Bot");
+    private Label orLabel3 = new Label("Or");
     private Label instruction = new Label("How to play: Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!");
     private HBox row1 = new HBox();
     private HBox row2 = new HBox();
@@ -217,11 +218,13 @@ public class Game2048 extends Application implements Serializable {
         /**
          * Designs the "ContinueStage", which lets the user play the game where they last stopped
          */
-        continueGrid.add(continueLabel,0,0);
-        continueGrid.add(continueButton,0,1);
-        continueGrid.add(dontContinueButton,0,2);
 
-        Scene continueScene = new Scene(continueGrid, 300, 150);
+        continueGrid.add(continueLabel,0,0);
+        continueGrid.add(continueButton,0,3);
+        continueGrid.add(orLabel3,0,2);
+        continueGrid.add(dontContinueButton,0,1);
+
+        Scene continueScene = new Scene(continueGrid, 200, 150);
         continueStage.setScene(continueScene);
 
         /**
@@ -231,7 +234,7 @@ public class Game2048 extends Application implements Serializable {
 
         customGridPane.add(startInstruction, 0, 0);
         customGridPane.add(startInput, 1, 0);
-        customGridPane.add(finishedCustomButton, 0, 2);
+        customGridPane.add(finishedCustomButton, 1, 1);
 
         customGridPane.setPadding(new Insets(10));
 
@@ -271,7 +274,6 @@ public class Game2048 extends Application implements Serializable {
         if(showContinueStage) {
             continueStage.show();
         }
-
 
         customButton.setOnAction(event -> {
             colorPicker = new TileColor("");
